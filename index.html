@@ -2,436 +2,2176 @@
 <html lang="cs">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Počasí s AccuWeather API - Jiříkův projekt</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0" id="viewport-meta">
+    <title>🌤️ Futuristiká Počasí Stanice - Admirál Jiřík & Claude.AI</title>
     <style>
-        body {
-            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #0d1a2b; /* Tmavě modrá, jako vesmír pro Star Trek projekty */
-            color: #e0e0e0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
+/* --- Globální styly a styly pro Page 1 (Futuristická Počasí Stanice) --- */
+        * {
             margin: 0;
-            padding: 20px;
+            padding: 0;
             box-sizing: border-box;
         }
-        .container {
-            background-color: #1a2a40; /* Trochu světlejší odstín modré */
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+
+        html {
+            height: 100%;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(90deg, #1e3a8a, #3b82f6);
+            color: #e2e8f0;
+            /* ZMĚNA: Odebrán min-height: 100vh a flex layout z body */
+            transition: background 0.5s ease;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Styly pro navigaci */
+        nav {
+            background-color: linear-gradient(90deg, #1e3a8a, #3b82f6);
+            padding: 10px;
             text-align: center;
-            max-width: 900px; /* Rozšíření pro tabulky */
-            width: 100%;
-            position: relative; /* Pro modální okno */
-            z-index: 1; /* Aby bylo pod modalem */
-        }
-        h1 {
-            color: #61dafb; /* Akcentní barva, jako LEDky! */
-            margin-bottom: 25px;
-            font-size: 2.2em;
-        }
-        .search-section {
             margin-bottom: 20px;
-            display: flex;
-            flex-wrap: wrap; /* Pro responzivitu tlačítek */
-            justify-content: center;
-            gap: 10px; /* Mezery mezi prvky */
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         }
-        input[type="text"] {
-            padding: 12px 15px;
-            flex-grow: 1; /* Aby se roztáhl */
-            min-width: 200px; /* Minimální šířka pro mobil */
-            border: 1px solid #3a4a60;
+
+        nav button {
+            background-color: #3498db;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            cursor: pointer;
+            margin: 0 8px;
             border-radius: 8px;
-            background-color: #0f1825;
-            color: #e0e0e0;
-            font-size: 1.1em;
-            transition: border-color 0.3s ease;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            font-size: 1rem;
+            font-weight: bold;
         }
-        input[type="text"]:focus {
-            border-color: #61dafb;
+
+        nav button:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        /* Styly pro přepínání stránek */
+        .page {
+            display: none;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s, transform 0.5s;
+            /* ZMĚNA: Odebrán flex a min-height, přidán normální padding */
+            padding: 0 20px 40px 20px;
+            width: 100%;
+        }
+
+        .page.active {
+            display: block; /* ZMĚNA: Vráceno zpět na block */
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Styly pro kontejner první stránky */
+        #page-home .container {
+              width: 90%;              /* Zabere 90 % šířky rodiče */
+  max-width: 1200px;       /* Nepřesáhne 1200px */
+            margin: 0 auto;
+            background: linear-gradient(90deg, #1e3a8a, #3b82f6);
+            border-radius: 20px;
+            border: 2px solid #3b82f6;
+            box-shadow: 0 0 30px rgba(30, 58, 138, 0.3);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            animation: glow 3s ease-in-out infinite alternate;
+            padding-bottom: 20px;
+            /* ZMĚNA: Odebrán flex z kontejneru */
+        }
+
+        @keyframes glow {
+            0% { box-shadow: 0 0 30px linear-gradient(90deg, #1e3a8a, #3b82f6); }
+            100% { box-shadow: 0 0 50px linear-gradient(90deg, #1e3a8a, #3b82f6); }
+        }
+
+        #page-home .header {
+            background: linear-gradient(90deg, #1e3a8a, #3b82f6);
+            padding: 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #page-home .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+             
+           
+             
+         
+        }
+
+        #page-home .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 2;
+            text-shadow: 0 0 20px linear-gradient(90deg, #1e3a8a, #3b82f6);
+        }
+
+        #page-home .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            position: relative;
+            z-index: 2;
+        }
+
+        #page-home .main-content {
+            padding: 30px;
+            /* ZMĚNA: Odebrán flex layout z main-content */
+        }
+
+        #page-home .search-section {
+            background: linear-gradient(90deg, #1e3a8a, #3b82f6);
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(0, 51, 102, 0.7);
+        }
+
+        #page-home .search-controls {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        #page-home .search-input {
+            flex: 1;
+            min-width: 200px;
+            padding: 15px 20px;
+            border: 2px solid #3b82f6;
+            border-radius: 10px;
+            background: rgba(0, 51, 102, 0.7);
+            color: #e2e8f0;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        #page-home .search-input:focus {
             outline: none;
+            border-color: #60a5fa;
+            box-shadow: 0 0 20px rgba(0, 51, 102, 0.7);
         }
-        button {
-            padding: 12px 25px;
-            background-color: #61dafb;
-            color: #0d1a2b;
+
+        #page-home .btn {
+            padding: 15px 25px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+
+        #page-home .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4);
+            background: linear-gradient(135deg, #60a5fa, #3b82f6);
+        }
+
+        #page-home .btn:active {
+            transform: translateY(0);
+        }
+
+        #page-home .btn.secondary {
+            background: linear-gradient(135deg, #64748b, #475569);
+        }
+
+        #page-home .btn.secondary:hover {
+            background: linear-gradient(135deg, #94a3b8, #64748b);
+        }
+
+        #page-home .btn.danger {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+
+        #page-home .btn.danger:hover {
+            background: linear-gradient(135deg, #f87171, #ef4444);
+        }
+
+        #page-home .favorites-section {
+            background: linear-gradient(90deg, #1e3a8a, #3b82f6);
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(0, 51, 102, 0.7);
+        }
+
+        #page-home .favorites-section h3 {
+            margin-bottom: 20px;
+            color: #60a5fa;
+            font-size: 1.3rem;
+        }
+
+        #page-home .favorites-controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        #page-home .favorites-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 15px;
+        }
+
+        #page-home .favorite-item {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            background: rgba(0, 51, 102, 0.7);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(0, 51, 102, 0.7);
+        }
+
+        #page-home .favorite-btn {
+            flex: 1;
+            padding: 10px 15px;
             border: none;
             border-radius: 8px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
             cursor: pointer;
-            font-size: 1.1em;
-            font-weight: bold;
-            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
-            margin: 5px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            font-weight: 500;
         }
-        button:hover {
-            background-color: #4dc2ea;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+
+        #page-home .favorite-btn:hover {
+            background: linear-gradient(135deg, #34d399, #10b981);
+            transform: translateY(-1px);
         }
-        button.favorite-btn {
-            background-color: #28a745;
-            font-size: 0.9em;
-            padding: 8px 15px;
-        }
-        button.favorite-btn:hover {
-            background-color: #218838;
-        }
-        button.remove-btn {
-            background-color: #dc3545;
-            font-size: 0.8em;
-            padding: 6px 10px;
-            margin-left: 8px;
-        }
-        button.remove-btn:hover {
-            background-color: #c82333;
-        }
-        .favorites-section {
-            margin: 20px 0;
-            padding: 20px;
-            background-color: #0f1825;
-            border-radius: 10px;
-            border: 1px solid #3a4a60;
-        }
-        .favorites-title {
-            color: #61dafb;
-            font-size: 1.3em;
-            margin-bottom: 15px;
-        }
-        .favorite-item {
-            display: inline-flex;
-            align-items: center;
-            margin: 5px;
-            background-color: #1a2a40;
+
+        #page-home .remove-btn {
             padding: 8px 12px;
+            border: none;
             border-radius: 8px;
-            border: 1px solid #3a4a60;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 12px;
         }
-        .management-section {
-            margin: 20px 0;
-            padding: 15px;
-            background-color: #0f1825;
+
+        #page-home .remove-btn:hover {
+            background: linear-gradient(135deg, #f87171, #ef4444);
+            transform: scale(1.1);
+        }
+
+        #page-home .message {
+            padding: 15px 20px;
             border-radius: 10px;
-            border: 1px solid #3a4a60;
+            margin: 15px 0;
+            font-weight: 500;
+            display: none;
+            animation: slideIn 0.3s ease;
         }
-        .management-title {
-            color: #ffa500;
-            font-size: 1.2em;
-            margin-bottom: 10px;
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-        #weather-info {
+
+        #page-home .error-message {
+            background: rgba(0, 51, 102, 0.7);
+            border: 1px solid #ef4444;
+            color: #fca5a5;
+        }
+
+        #page-home .success-message {
+            background: rgba(0, 51, 102, 0.7);
+            border: 1px solid #10b981;
+            color: #6ee7b7;
+        }
+
+        #page-home .loading-message {
+            background: rgba(0, 51, 102, 0.7);
+            border: 1px solid #3b82f6;
+            color: #93c5fd;
+            text-align: center;
+            display: none;
+        }
+
+        #page-home .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(0, 51, 102, 0.7);
+            border-radius: 50%;
+            border-top-color: #3b82f6;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        #page-home .weather-info {
             margin-top: 30px;
             font-size: 1.2em;
             line-height: 1.6;
             text-align: left;
             border-top: 1px solid #3a4a60;
             padding-top: 20px;
-            display: none; /* Skryjeme, dokud se nezískají data */
-            overflow-x: auto; /* Pro vodorovné posouvání tabulek na menších obrazovkách */
+            display: none;
+            overflow-x: auto;
+            background-color: #1a2a40;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0, 51, 102, 0.7);
+            border: none;
         }
-        #weather-info p {
-            margin-bottom: 10px;
-        }
-        .error {
-            color: #ff6b6b;
-            font-weight: bold;
-            margin-top: 20px;
-        }
-        .loading {
+        
+        #page-home .weather-info h2 {
             color: #61dafb;
-            margin-top: 20px;
-        }
-        .success {
-            color: #28a745;
-            font-weight: bold;
-            margin-top: 10px;
-        }
-        footer {
-            margin-top: 40px;
-            font-size: 0.9em;
-            color: #90a0b8;
+            margin-bottom: 25px;
+            font-size: 2.2em;
             text-align: center;
+            text-shadow: none;
         }
-        .debug-section {
-            margin-top: 20px;
-            padding: 10px;
-            background-color: #2d1810;
-            border-radius: 8px;
-            border: 1px solid #8b4513;
-            font-family: monospace;
-            font-size: 0.9em;
-            text-align: left;
-        }
-        .debug-title {
-            color: #ffa500;
-            font-weight: bold;
-            margin-bottom: 10px;
+        
+        #page-home .weather-info h3 {
+            color: #61dafb;
+            margin: 20px 0 15px 0;
+            font-size: 1.3em;
         }
 
-        /* --- Styly pro tabulku předpovědi --- */
-        .forecast-table, .current-conditions-table {
+        #page-home .current-conditions-table,
+        #page-home .forecast-table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
-            background-color: #0f1825; /* Tmavší pozadí pro tabulku */
-            border-radius: 8px; /* Zaoblené rohy tabulky */
-            overflow: hidden; /* Pro zaoblení rohů s border-collapse */
+            background-color: #0f1825;
+            border-radius: 0;
+            overflow: hidden;
+            border: none;
         }
-        .forecast-table th, .current-conditions-table th,
-        .forecast-table td, .current-conditions-table td {
-            border: 1px solid #3a4a60; /* Tenký šedý rámeček */
+
+        #page-home .current-conditions-table th,
+        #page-home .current-conditions-table td,
+        #page-home .forecast-table th,
+        #page-home .forecast-table td {
+            border: 1px solid #3a4a60;
             padding: 12px;
             text-align: center;
+            border-bottom: none;
         }
-        .forecast-table th, .current-conditions-table th {
-            background-color: #2a3a50; /* Hlavička tabulky s akcentem */
+
+        #page-home .current-conditions-table th,
+        #page-home .forecast-table th {
+            background-color: #2a3a50;
             color: #61dafb;
             font-weight: bold;
             text-transform: uppercase;
             font-size: 0.9em;
         }
-        .forecast-table tbody tr:nth-child(even),
-        .current-conditions-table tbody tr:nth-child(even) {
-            background-color: #1a2a40; /* Střídavé řádky pro lepší čitelnost */
-        }
-        .forecast-table td, .current-conditions-table td {
-            font-size: 0.95em;
-        }
-        /* Pro ikony, když jsou to emoji nebo znaky */
-        .weather-icon {
-            font-size: 1.8em; /* Větší velikost pro emoji ikonu */
-            line-height: 1; /* Lepší zarovnání */
-            display: block; /* Aby byla na vlastním řádku v buňce */
-            margin: 0 auto 5px auto; /* Centrování a mezera pod */
-        }
-        /* Specific alignment for current conditions table values */
-        .current-conditions-table td:first-child {
-            text-align: left; /* Zarovnání názvů informací vlevo */
-            font-weight: bold;
-            color: #a0c2e8; /* Mírně světlejší barva pro název informace */
-        }
-        .current-conditions-table td:last-child {
-            text-align: right; /* Zarovnání hodnot vpravo */
+
+        #page-home .current-conditions-table tbody tr:nth-child(even),
+        #page-home .forecast-table tbody tr:nth-child(even) {
+            background-color: #1a2a40;
         }
 
-        /* --- Styly pro vlastní modální okno (dialog) --- */
-        .modal-overlay {
+        #page-home .current-conditions-table td,
+        #page-home .forecast-table td {
+            font-size: 0.95em;
+        }
+
+        /* Weather icon for page-home (inline with text) */
+        #page-home .weather-icon {
+            font-size: 1.5em;
+            line-height: 1;
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 5px;
+        }
+
+        #page-home .current-conditions-table td:first-child {
+            text-align: left;
+            font-weight: bold;
+            color: #a0c2e8;
+        }
+        
+        #page-home .current-conditions-table td:last-child {
+            text-align: right;
+            color: #e0e0e0;
+            font-weight: normal;
+        }
+
+        #page-home .debug-section {
+            background: rgba(0, 51, 102, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 30px;
+            border: 1px solid rgba(0, 51, 102, 0.7);
+            display: none;
+        }
+
+        #page-home .debug-section h3 {
+            color: #94a3b8;
+            margin-bottom: 15px;
+        }
+
+        #page-home .debug-section pre {
+            background: rgba(0, 51, 102, 0.7);
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 12px;
+            color: #cbd5e1;
+            border: 1px solid rgba(0, 51, 102, 0.7);
+        }
+
+        /* Modal styling (shared) */
+        .custom-modal {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.7); /* Tmavší průhledné pozadí */
+            background: rgba(0, 0, 0, 0.8);
             display: flex;
-            align-items: center;
             justify-content: center;
-            z-index: 1000; /* Nad všemi ostatními prvky */
+            align-items: center;
+            z-index: 1000;
             opacity: 0;
             visibility: hidden;
-            transition: opacity 0.3s ease, visibility 0.3s ease;
+            transition: all 0.3s ease;
         }
-        .modal-overlay.visible {
+
+        .custom-modal.visible {
             opacity: 1;
             visibility: visible;
         }
+
         .modal-content {
-            background-color: #1a2a40; /* Stejné jako container */
+            background: linear-gradient(135deg, #1e3a8a, #0f1825);
             padding: 30px;
             border-radius: 15px;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+            border: 2px solid #3b82f6;
+            box-shadow: 0 0 50px rgba(0, 51, 102, 0.7);
             text-align: center;
-            max-width: 450px;
+            max-width: 400px;
             width: 90%;
-            transform: scale(0.9);
-            transition: transform 0.3s ease;
-        }
-        .modal-overlay.visible .modal-content {
-            transform: scale(1);
-        }
-        .modal-content p {
-            font-size: 1.2em;
-            margin-bottom: 25px;
-            color: #e0e0e0;
-        }
-        .modal-buttons button {
-            margin: 0 10px;
-            padding: 10px 20px;
-            font-size: 1em;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-        .modal-buttons .confirm-btn {
-            background-color: #28a745;
-            color: #fff;
-        }
-        .modal-buttons .confirm-btn:hover {
-            background-color: #218838;
-        }
-        .modal-buttons .cancel-btn {
-            background-color: #dc3545;
-            color: #fff;
-        }
-        .modal-buttons .cancel-btn:hover {
-            background-color: #c82333;
         }
 
-        /* Responzivní úpravy */
-        @media (max-width: 600px) {
-            .container {
-                padding: 15px;
-            }
-            h1 {
-                font-size: 1.8em;
-            }
-            input[type="text"], button {
-                width: 100%; /* Plná šířka na mobilu */
-                margin: 5px 0; /* Vertikální mezera */
-            }
-            .search-section {
-                flex-direction: column; /* Sloupcové uspořádání */
-                gap: 5px;
-            }
-            .favorite-item {
-                flex-direction: column;
-                align-items: stretch;
-                padding: 10px;
-            }
-            .favorite-item button {
-                width: auto;
-                margin: 5px 0;
-            }
-            .favorite-item .remove-btn {
-                margin-left: 0;
-            }
+        .modal-message {
+            margin-bottom: 25px;
+            font-size: 1.1rem;
+            color: #e2e8f0;
         }
+
+        .modal-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        
+        /* ===== FUTURISTICKÝ CSS PRO PROJEKT SPRÁVY HESEL - ADMIRAL JIŘÍK & CLAUDE ===== */
+
+/* Základní styl pro page-about s night mode */
+#page-about.night-mode {
+    background: linear-gradient(135deg, #1e3a8a, #0f1825);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Animovaný pozadí efekt */
+#page-about.night-mode::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(circle at 20% 30%, rgba(0, 255, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.05) 0%, transparent 50%);
+    animation: backgroundPulse 8s ease-in-out infinite;
+    z-index: -1;
+}
+
+@keyframes backgroundPulse {
+    0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.8; }
+    50% { transform: scale(1.1) rotate(2deg); opacity: 1; }
+}
+
+/* Hlavní nadpis s vylepšeným efektem */
+#page-about h1 {
+     color: aquamarine;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    font-weight: 700;
+    letter-spacing: 2px;
+    position: relative;
+     
+}
+
+ 
+
+/* Kontejner pro vstupy s vylepšeným designem */
+#page-about .input-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+    max-width: 100%;
+    margin-bottom: 1rem;
+    text-align: center;
+    gap: 10px;
+    padding: 10px;
+}
+
+/* Vylepšené styly pro inputy, buttony a selecty */
+#page-about input,
+#page-about button,
+#page-about select {
+    padding: 0.8rem 1rem;
+    font-size: 1rem;
+    margin: 0.5rem;
+    border-radius: 12px;
+    border: none;
+    text-align: center;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    font-weight: 500;
+}
+
+/* Input pole s futuristickým vzhledem */
+#page-about input {
+    flex-grow: 1;
+    min-width: 200px;
+    border: 2px solid #0ff;
+    background: linear-gradient(135deg, #1e3a8a, #0f1825);
+    color: #fff;
+    box-shadow: 
+        0 0 10px rgba(0, 255, 255, 0.3),
+        inset 0 1px 3px rgba(255, 255, 255, 0.1);
+    text-align: center;
+    backdrop-filter: blur(5px);
+}
+
+#page-about input::placeholder {
+    color: rgba(0, 255, 255, 0.6);
+    font-style: italic;
+}
+
+#page-about input:focus {
+    outline: none;
+    border-color: #00e6e6;
+    box-shadow: 
+        0 0 20px rgba(0, 255, 255, 0.5),
+        0 0 30px rgba(0, 255, 255, 0.2),
+        inset 0 1px 3px rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+}
+
+/* Vylepšené buttony s hover efekty */
+#page-about button {
+    background: linear-gradient(135deg, #0ff, #00b8d4);
+    color: #001f3f;
+    cursor: pointer;
+    font-weight: bold;
+    min-width: 140px;
+    box-shadow: 
+        0 4px 15px rgba(0, 255, 255, 0.3),
+        inset 0 1px 3px rgba(255, 255, 255, 0.3);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+#page-about button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.5s;
+}
+
+#page-about button:hover::before {
+    left: 100%;
+}
+
+#page-about button:hover {
+    background: linear-gradient(135deg, #00e6e6, #0097a7);
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 
+        0 8px 25px rgba(0, 255, 255, 0.4),
+        inset 0 1px 3px rgba(255, 255, 255, 0.4);
+}
+
+#page-about button:active {
+    transform: translateY(-1px) scale(0.98);
+}
+
+/* Vylepšený forecast div s lepším designem */
+#page-about #forecastDivPage2 {
+    margin-top: 1rem;
+    padding: 2rem;
+    background:  ;
+    border-radius: 15px;
+    max-width: 100%;
+    width: 100%;
+    box-shadow: 
+        0 10px 30px rgba(0, 255, 0, 0.2),
+        inset 0 1px 3px rgba(0, 255, 0, 0.1);
+    border: 2px solid rgba(0, 255, 0, 0.3);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+    color: #b0ffb0;
+    backdrop-filter: blur(10px);
+}
+
+/* Vylepšený shine efekt */
+#page-about #forecastDivPage2:before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 200%;
+    height: 100%;
+     
+     
+}
+
+@keyframes shine {
+    0% { transform: translateX(-100%) skewX(-25deg); }
+    100% { transform: translateX(200%) skewX(-25deg); }
+}
+
+/* Hover efekt pro forecast div */
+#page-about #forecastDivPage2:hover {
+     
+    box-shadow: 
+        0 15px 40px rgba(0, 255, 0, 0.3),
+        inset 0 1px 5px rgba(0, 255, 0, 0.2);
+    border-color: rgba(0, 255, 0, 0.5);
+}
+
+/* Nadpis tabulky s lepším stylem */
+#page-about #forecastDivPage2 h2 {
+    margin-top: 0;
+    border-bottom: 2px solid rgba(0, 255, 0, 0.3);
+    padding-bottom: 0.8rem;
+    text-align: center;
+    font-size: 1.5rem;
+    color: #99ff99;
+    text-shadow: 
+        0 0 8px rgba(0, 255, 0, 0.6),
+        0 0 15px rgba(0, 255, 0, 0.3);
+    font-weight: 600;
+    letter-spacing: 1px;
+    position: relative;
+    z-index: 1;
+}
+
+/* Alert s vylepšeným designem */
+#page-about .alert {
+    color: #ff6b6b;
+    font-weight: bold;
+    padding: 1rem;
+    background: linear-gradient(135deg, rgba(255, 0, 0, 0.15), rgba(255, 0, 0, 0.1));
+    border-radius: 10px;
+    margin-top: 1rem;
+    text-align: center;
+    border: 2px solid rgba(255, 107, 107, 0.4);
+    box-shadow: 0 5px 15px rgba(255, 0, 0, 0.2);
+    backdrop-filter: blur(5px);
+    animation: alertPulse 2s ease-in-out infinite;
+}
+
+@keyframes alertPulse {
+    0%, 100% { border-color: rgba(255, 107, 107, 0.4); }
+    50% { border-color: rgba(255, 107, 107, 0.8); }
+}
+
+/* Weather icon s vylepšenou animací */
+#page-about .weather-icon {
+    font-size: 4rem;
+    text-align: center;
+    display: block;
+    margin: 1rem 0;
+    animation: weatherFloat 4s ease-in-out infinite;
+    text-shadow: 
+        0 0 15px rgba(255, 255, 255, 0.8),
+        0 0 30px rgba(255, 255, 255, 0.4);
+    filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.3));
+}
+
+@keyframes weatherFloat {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    25% { transform: translateY(-15px) rotate(2deg); }
+    75% { transform: translateY(-5px) rotate(-1deg); }
+}
+
+/* Weather row s lepším designem */
+#page-about .weather-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0.8rem 0;
+    padding: 0.8rem;
+    border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+    text-align: center;
+    background: rgba(0, 255, 255, 0.05);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(3px);
+}
+
+#page-about .weather-row:hover {
+    background: rgba(0, 255, 255, 0.1);
+    transform: translateX(10px);
+    box-shadow: 0 2px 8px rgba(0, 255, 255, 0.2);
+}
+
+/* Weather label s lepším stylem */
+#page-about .weather-label {
+    font-weight: 600;
+    text-align: center;
+    color: #0ff;
+    text-shadow: 0 0 5px rgba(0, 255, 255, 0.3);
+}
+
+/* Loading animace */
+#page-about .loading {
+    animation: loadingPulse 1.5s infinite;
+    text-align: center;
+    font-size: 1.1rem;
+    color: #0ff;
+}
+
+@keyframes loadingPulse {
+    0%, 100% { opacity: 0.6; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.05); }
+}
+
+/* Tips s vylepšeným designem */
+#page-about .tips {
+    margin-top: 1.5rem;
+    padding: 1.2rem;
+    background: linear-gradient(135deg, rgba(0, 255, 255, 0.15), rgba(0, 255, 255, 0.1));
+    border-radius: 12px;
+    border-left: 4px solid #0ff;
+    font-style: italic;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(0, 255, 255, 0.1);
+    position: relative;
+    backdrop-filter: blur(5px);
+}
+
+#page-about .tips::before {
+    content: "💡";
+    position: absolute;
+    top: -10px;
+    left: 20px;
+    font-size: 1.5rem;
+    background: linear-gradient(135deg, #1e3a8a, #0f1825);
+    padding: 5px;
+    border-radius: 50%;
+}
+
+/* Forecast section s lepším designem */
+#page-about .forecast-section {
+    margin-top: 2rem;
+    border-top: 2px dashed rgba(0, 255, 255, 0.4);
+    padding-top: 1.5rem;
+    text-align: center;
+    position: relative;
+}
+
+#page-about .forecast-title {
+    font-weight: bold;
+    margin-bottom: 1rem;
+    text-align: center;
+    color: #0ff;
+    text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+    font-size: 1.3rem;
+    letter-spacing: 1px;
+}
+
+/* Daily forecast s vylepšeným scrollem */
+#page-about .daily-forecast {
+    display: flex;
+    overflow-x: auto;
+    gap: 15px;
+    padding: 15px 0;
+    scroll-behavior: smooth;
+    text-align: center;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 255, 255, 0.5) transparent;
+}
+
+#page-about .daily-forecast::-webkit-scrollbar {
+    height: 8px;
+}
+
+#page-about .daily-forecast::-webkit-scrollbar-track {
+    background: rgba(0, 255, 255, 0.1);
+    border-radius: 10px;
+}
+
+#page-about .daily-forecast::-webkit-scrollbar-thumb {
+    background: linear-gradient(90deg, #0ff, #00b8d4);
+    border-radius: 10px;
+}
+
+/* Forecast day s lepšími efekty */
+#page-about .forecast-day {
+    min-width: 120px;
+    text-align: center;
+    padding: 15px;
+    border-radius: 15px;
+    background: linear-gradient(135deg, rgba(0, 51, 102, 0.8), rgba(0, 51, 102, 0.6));
+    border: 2px solid rgba(0, 255, 255, 0.3);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(10px);
+    position: relative;
+    overflow: hidden;
+}
+
+#page-about .forecast-day::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(0, 255, 255, 0.1), transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+#page-about .forecast-day:hover::before {
+    opacity: 1;
+}
+
+#page-about .forecast-day:hover {
+    transform: translateY(-10px) scale(1.05);
+    box-shadow: 0 15px 30px rgba(0, 255, 255, 0.4);
+    border-color: rgba(0, 255, 255, 0.6);
+}
+
+/* Day name styling */
+#page-about .day-name {
+    font-weight: 600;
+    margin-bottom: 8px;
+    text-align: center;
+    color: #0ff;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Forecast icon */
+#page-about .forecast-icon {
+    font-size: 2.5rem;
+    margin: 10px 0;
+    text-align: center;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+    animation: iconFloat 3s ease-in-out infinite;
+}
+
+@keyframes iconFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+}
+
+/* Temperature range */
+#page-about .temp-range {
+    font-size: 0.95rem;
+    text-align: center;
+    font-weight: 500;
+    color: #b0ffb0;
+}
+
+/* Settings row s vylepšeným layoutem */
+#page-about .settings-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1.5rem;
+    padding: 1rem;
+    background: linear-gradient(135deg, rgba(0, 51, 102, 0.8), rgba(0, 51, 102, 0.6));
+    border-radius: 15px;
+    width: 90%;
+    max-width: 1200px;
+    text-align: center;
+    border: 2px solid rgba(0, 255, 255, 0.2);
+    box-shadow: 0 5px 15px rgba(0, 51, 102, 0.3);
+    backdrop-filter: blur(10px);
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Toggle container */
+#page-about .toggle-container {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    width: 90%;
+    max-width: 1200px;
+    gap: 15px;
+}
+
+#page-about .toggle-label {
+    margin-right: 15px;
+    font-size: 1rem;
+    text-align: center;
+    font-weight: 500;
+    color: #0ff;
+}
+
+/* Vylepšený toggle switch */
+#page-about .toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 30px;
+    text-align: center;
+}
+
+#page-about .toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    text-align: center;
+}
+
+#page-about .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(0, 51, 102, 0.8), rgba(0, 51, 102, 0.6));
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 30px;
+    border: 2px solid rgba(0, 255, 255, 0.4);
+    text-align: center;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+#page-about .slider:before {
+    position: absolute;
+    content: "";
+    height: 22px;
+    width: 22px;
+    left: 4px;
+    bottom: 2px;
+    background: linear-gradient(135deg, #fff, #e0e0e0);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 50%;
+    text-align: center;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+#page-about input:checked + .slider {
+    background: linear-gradient(135deg, #0ff, #00b8d4);
+    border-color: rgba(0, 255, 255, 0.8);
+    box-shadow: 
+        inset 0 2px 4px rgba(0, 0, 0, 0.2),
+        0 0 10px rgba(0, 255, 255, 0.3);
+}
+
+#page-about input:checked + .slider:before {
+    transform: translateX(30px);
+    background: linear-gradient(135deg, #fff, #f0f0f0);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+/* Select s lepším stylem */
+#page-about select {
+    background: linear-gradient(135deg, rgba(0, 51, 102, 0.8), rgba(0, 51, 102, 0.6));
+    color: #0ff;
+    border: 2px solid rgba(0, 255, 255, 0.3);
+    border-radius: 10px;
+    padding: 0.8rem;
+    backdrop-filter: blur(5px);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#page-about select:focus {
+    outline: none;
+    border-color: rgba(0, 255, 255, 0.6);
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+}
+
+/* Last updated div */
+#page-about #lastUpdatedDivPage2 {
+    margin-top: 1.5rem;
+    font-size: 0.9rem;
+    opacity: 0.8;
+    text-align: center;
+    font-style: italic;
+    color: rgba(0, 255, 255, 0.7);
+    background: rgba(0, 255, 255, 0.05);
+    padding: 0.5rem;
+    border-radius: 8px;
+    border: 1px solid rgba(0, 255, 255, 0.2);
+}
+
+/* Favorites container */
+#page-about .favorites-container {
+    margin-top: 2rem;
+    width: 100%;
+    max-width: 100%;
+    text-align: center;
+    padding: 1rem;
+    background: rgba(0, 255, 255, 0.05);
+    border-radius: 15px;
+    border: 2px solid rgba(0, 255, 255, 0.2);
+}
+
+#page-about .favorites-title {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    text-align: center;
+    color: #0ff;
+    font-weight: 600;
+    text-shadow: 0 0 8px rgba(0, 255, 255, 0.4);
+}
+
+#page-about .favorites-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    text-align: center;
+}
+
+/* Vylepšené favorite city buttons */
+#page-about .favorite-city {
+    background: linear-gradient(135deg, rgba(0, 51, 102, 0.8), rgba(0, 51, 102, 0.6));
+    border: 2px solid rgba(0, 255, 255, 0.3);
+    border-radius: 25px;
+    padding: 8px 16px;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    text-align: center;
+    backdrop-filter: blur(5px);
+    position: relative;
+    overflow: hidden;
+}
+
+#page-about .favorite-city::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+#page-about .favorite-city:hover::before {
+    left: 100%;
+}
+
+#page-about .favorite-city:hover {
+    background: linear-gradient(135deg, rgba(0, 255, 255, 0.2), rgba(0, 51, 102, 0.8));
+    transform: translateY(-3px) scale(1.05);
+    border-color: rgba(0, 255, 255, 0.6);
+    box-shadow: 0 8px 20px rgba(0, 255, 255, 0.3);
+}
+
+#page-about .favorite-icon {
+    margin-right: 8px;
+    text-align: center;
+    font-size: 1.1rem;
+}
+
+#page-about .remove-favorite {
+    margin-left: 8px;
+    font-size: 1rem;
+    opacity: 0.7;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+#page-about .remove-favorite:hover {
+    opacity: 1;
+    color: #ff6b6b;
+    transform: scale(1.2);
+}
+
+/* Footer s lepším stylem */
+#page-about .footer {
+    margin-top: 3rem;
+    font-size: 0.9rem;
+    opacity: 0.8;
+    text-align: center;
+    padding: 1rem;
+    border-top: 1px solid rgba(0, 255, 255, 0.2);
+    background: rgba(0, 255, 255, 0.05);
+    border-radius: 10px;
+    color: rgba(0, 255, 255, 0.8);
+}
+
+/* Star Trek Mode efekty */
+#page-about.star-trek-mode .weather-icon,
+#page-about.star-trek-mode .forecast-icon {
+    font-family: 'Star Trek', sans-serif;
+    animation: starTrekGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes starTrekGlow {
+    0% { filter: drop-shadow(0 0 5px #0ff); }
+    100% { filter: drop-shadow(0 0 15px #0ff); }
+}
+
+#page-about.star-trek-mode h1::before,
+#page-about.star-trek-mode h1::after {
+    content: "🖖";
+    margin: 0 15px;
+    text-align: center;
+    animation: vulcanSalute 3s ease-in-out infinite;
+}
+
+@keyframes vulcanSalute {
+    0%, 100% { transform: rotate(0deg) scale(1); }
+    50% { transform: rotate(10deg) scale(1.1); }
+}
+
+/* Kontejner s vylepšeným designem */
+.kontejner {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+    background: linear-gradient(135deg, rgba(0, 51, 102, 0.9), rgba(0, 51, 102, 0.7));
+    border-radius: 25px;
+    border: 3px solid #3b82f6;
+    box-shadow: 
+        0 0 40px rgba(59, 130, 246, 0.4),
+        inset 0 1px 3px rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+    backdrop-filter: blur(15px);
+    animation: containerGlow 4s ease-in-out infinite alternate;
+    padding-bottom: 30px;
+    position: relative;
+}
+
+@keyframes containerGlow {
+    0% { 
+        box-shadow: 0 0 40px rgba(59, 130, 246, 0.4);
+        border-color: #3b82f6;
+    }
+    100% { 
+        box-shadow: 0 0 60px rgba(59, 130, 246, 0.6);
+        border-color: #60a5fa;
+    }
+}
+#fullscreen-btn, #toggle-layout {
+  background: linear-gradient(135deg, #0ff, #00b8d4);
+  color: #001f3f;
+  cursor: pointer;
+  font-weight: bold;
+  min-width: 160px;
+  padding: 12px 20px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 12px;
+  box-shadow: 
+      0 4px 15px rgba(0, 255, 255, 0.3),
+      inset 0 1px 3px rgba(255, 255, 255, 0.3);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+#fullscreen-btn:hover, #toggle-layout:hover {
+  background-color: #2980b9;
+  transform: translateY(-2px);
+}
+
+body.desktop-mode {
+  zoom: 0.8;
+  overflow-x: auto;
+  background-color: #111;
+}
+/* ===== MEDIA QUERIES PRO MOBILNÍ ZAŘÍZENÍ ===== */
+
+/* Tablety a menší obrazovky (768px a méně) */
+@media screen and (max-width: 768px) {
+    
+    /* Základní nastavení pro menší obrazovky */
+    body {
+        font-size: 14px;
+        padding: 0 10px;
+    }
+    
+    /* Navigace pro tablety */
+    nav {
+        padding: 8px;
+        margin-bottom: 15px;
+    }
+    
+    nav button {
+        padding: 8px 12px;
+        margin: 0 4px;
+        font-size: 0.9rem;
+    }
+    
+    /* Kontejnery pro tablety */
+    #page-home .container,
+    .kontejner {
+        width: 95%;
+        margin: 0 auto;
+        border-radius: 15px;
+    }
+    
+    /* Hlavní obsah */
+    #page-home .main-content {
+        padding: 20px;
+    }
+    
+    /* Search sekce */
+    #page-home .search-controls {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    #page-home .search-input {
+        min-width: 100%;
+        width: 100%;
+    }
+    
+    /* Oblubené položky */
+    #page-home .favorites-list {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+    
+    /* Page-about pro tablety */
+    #page-about h1 {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+    }
+    
+    #page-about .input-container {
+        flex-direction: column;
+        gap: 8px;
+        padding: 8px;
+    }
+    
+    #page-about input,
+    #page-about button,
+    #page-about select {
+        width: 100%;
+        margin: 0.3rem 0;
+        font-size: 0.9rem;
+    }
+    
+    #page-about .daily-forecast {
+        gap: 10px;
+        padding: 10px 0;
+    }
+    
+    #page-about .forecast-day {
+        min-width: 100px;
+        padding: 12px;
+    }
+    
+    #page-about .settings-row {
+        flex-direction: column;
+        gap: 15px;
+        padding: 15px;
+        width: 95%;
+    }
+    
+    #page-about .toggle-container {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* Mobilní telefony (576px a méně) */
+@media screen and (max-width: 576px) {
+    
+    /* Základní nastavení pro mobily */
+    body {
+        font-size: 13px;
+        padding: 0 5px;
+    }
+    
+    /* Navigace pro mobily */
+    nav {
+        padding: 5px;
+        margin-bottom: 10px;
+        border-radius: 8px;
+    }
+    
+    nav button {
+        padding: 6px 10px;
+        margin: 2px;
+        font-size: 0.8rem;
+        min-width: auto;
+        flex: 1;
+    }
+    
+    /* Flex kontejner pro navigační tlačítka */
+    nav {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 5px;
+    }
+    
+    /* Kontejnery pro mobily */
+    #page-home .container,
+    .kontejner {
+        width: 98%;
+        margin: 0 auto;
+        border-radius: 10px;
+        border-width: 1px;
+    }
+    
+    /* Hlavičky */
+    #page-home .header {
+        padding: 20px 15px;
+    }
+    
+    #page-home .header h1 {
+        font-size: 1.8rem;
+        margin-bottom: 8px;
+    }
+    
+    #page-home .header p {
+        font-size: 1rem;
+    }
+    
+    /* Hlavní obsah */
+    #page-home .main-content {
+        padding: 15px;
+    }
+    
+    /* Search sekce */
+    #page-home .search-section {
+        padding: 15px;
+        margin-bottom: 20px;
+        border-radius: 10px;
+    }
+    
+    #page-home .search-controls {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    #page-home .search-input {
+        width: 100%;
+        padding: 12px 15px;
+        font-size: 14px;
+    }
+    
+    #page-home .btn {
+        width: 100%;
+        padding: 12px 20px;
+        font-size: 14px;
+        margin: 5px 0;
+    }
+    
+    /* Oblubené sekce */
+    #page-home .favorites-section {
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+    
+    #page-home .favorites-section h3 {
+        font-size: 1.1rem;
+        margin-bottom: 15px;
+    }
+    
+    #page-home .favorites-controls {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    #page-home .favorites-list {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+    
+    #page-home .favorite-item {
+        flex-direction: column;
+        gap: 8px;
+        padding: 12px;
+    }
+    
+    #page-home .favorite-btn {
+        width: 100%;
+        padding: 10px;
+    }
+    
+    #page-home .remove-btn {
+        align-self: center;
+        padding: 6px 10px;
+    }
+    
+    /* Weather info pro mobily */
+    #page-home .weather-info {
+        padding: 20px 15px;
+        margin-top: 20px;
+        border-radius: 10px;
+    }
+    
+    #page-home .weather-info h2 {
+        font-size: 1.6rem;
+        margin-bottom: 20px;
+    }
+    
+    #page-home .weather-info h3 {
+        font-size: 1.1rem;
+        margin: 15px 0 10px 0;
+    }
+    
+    /* Tabulky pro mobily */
+    #page-home .current-conditions-table,
+    #page-home .forecast-table {
+        font-size: 0.8rem;
+        overflow-x: auto;
+        display: block;
+        white-space: nowrap;
+    }
+    
+    #page-home .current-conditions-table th,
+    #page-home .current-conditions-table td,
+    #page-home .forecast-table th,
+    #page-home .forecast-table td {
+        padding: 8px 6px;
+        min-width: 80px;
+    }
+    
+    /* Page-about pro mobily */
+    #page-about h1 {
+        font-size: 1.6rem;
+        margin-bottom: 1rem;
+        padding: 0 10px;
+    }
+    
+    #page-about .input-container {
+        flex-direction: column;
+        gap: 6px;
+        padding: 5px;
+        width: 100%;
+    }
+    
+    #page-about input,
+    #page-about button,
+    #page-about select {
+        width: 100%;
+        margin: 0.2rem 0;
+        padding: 10px 12px;
+        font-size: 0.9rem;
+        min-width: auto;
+    }
+    
+    #page-about #forecastDivPage2 {
+        padding: 15px;
+        margin-top: 15px;
+        border-radius: 10px;
+    }
+    
+    #page-about #forecastDivPage2 h2 {
+        font-size: 1.3rem;
+        margin-bottom: 15px;
+    }
+    
+    /* Weather icon pro mobily */
+    #page-about .weather-icon {
+        font-size: 3rem;
+        margin: 0.8rem 0;
+    }
+    
+    #page-home .weather-icon {
+        font-size: 1.2em;
+    }
+    
+    /* Weather rows pro mobily */
+    #page-about .weather-row {
+        flex-direction: column;
+        gap: 5px;
+        padding: 10px;
+        text-align: center;
+    }
+    
+    #page-about .weather-label {
+        font-size: 0.9rem;
+        margin-bottom: 5px;
+    }
+    
+    /* Daily forecast pro mobily */
+    #page-about .daily-forecast {
+        gap: 8px;
+        padding: 10px 0;
+    }
+    
+    #page-about .forecast-day {
+        min-width: 90px;
+        padding: 10px 8px;
+        border-radius: 10px;
+    }
+    
+    #page-about .forecast-icon {
+        font-size: 2rem;
+        margin: 8px 0;
+    }
+    
+    #page-about .day-name {
+        font-size: 0.8rem;
+        margin-bottom: 6px;
+    }
+    
+    #page-about .temp-range {
+        font-size: 0.85rem;
+    }
+    
+    /* Settings pro mobily */
+    #page-about .settings-row {
+        flex-direction: column;
+        gap: 12px;
+        padding: 12px;
+        width: 98%;
+        margin: 1rem auto;
+    }
+    
+    #page-about .toggle-container {
+        width: 100%;
+        justify-content: center;
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    #page-about .toggle-label {
+        margin-right: 0;
+        text-align: center;
+        margin-bottom: 8px;
+    }
+    
+    /* Favorites pro mobily */
+    #page-about .favorites-container {
+        padding: 12px;
+        margin-top: 15px;
+    }
+    
+    #page-about .favorites-title {
+        font-size: 1.1rem;
+        margin-bottom: 10px;
+    }
+    
+    #page-about .favorites-list {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    #page-about .favorite-city {
+        width: 100%;
+        justify-content: center;
+        padding: 10px 14px;
+        font-size: 0.9rem;
+    }
+    
+    /* Alert pro mobily */
+    #page-about .alert {
+        padding: 12px;
+        font-size: 0.9rem;
+        margin-top: 15px;
+    }
+    
+    /* Tips pro mobily */
+    #page-about .tips {
+        padding: 15px;
+        margin-top: 15px;
+        font-size: 0.9rem;
+    }
+    
+    /* Footer pro mobily */
+    #page-about .footer {
+        margin-top: 20px;
+        padding: 12px;
+        font-size: 0.8rem;
+    }
+    
+    /* Last updated pro mobily */
+    #page-about #lastUpdatedDivPage2 {
+        font-size: 0.8rem;
+        padding: 8px;
+        margin-top: 15px;
+    }
+    
+    /* Modální okna pro mobily */
+    .modal-content {
+        width: 95%;
+        padding: 20px 15px;
+        border-radius: 10px;
+        margin: 0 10px;
+    }
+    
+    .modal-message {
+        font-size: 1rem;
+        margin-bottom: 20px;
+    }
+    
+    .modal-buttons {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .modal-buttons button {
+        width: 100%;
+        padding: 12px;
+        font-size: 0.9rem;
+    }
+    
+    /* Fullscreen a toggle layout buttony */
+    #fullscreen-btn, 
+    #toggle-layout {
+        min-width: 120px;
+        padding: 10px 16px;
+        font-size: 0.9rem;
+    }
+    
+    /* Debug sekce pro mobily */
+    #page-home .debug-section {
+        padding: 15px;
+        margin-top: 20px;
+    }
+    
+    #page-home .debug-section pre {
+        font-size: 10px;
+        padding: 10px;
+        overflow-x: auto;
+    }
+}
+
+/* Extra malé mobily (400px a méně) */
+@media screen and (max-width: 400px) {
+    
+    body {
+        font-size: 12px;
+        padding: 0 2px;
+    }
+    
+    /* Navigace pro extra malé mobily */
+    nav button {
+        padding: 5px 8px;
+        font-size: 0.7rem;
+        margin: 1px;
+    }
+    
+    /* Kontejnery */
+    #page-home .container,
+    .kontejner {
+        width: 99%;
+        border-radius: 8px;
+    }
+    
+    /* Hlavičky */
+    #page-home .header {
+        padding: 15px 10px;
+    }
+    
+    #page-home .header h1 {
+        font-size: 1.5rem;
+    }
+    
+    #page-about h1 {
+        font-size: 1.4rem;
+        padding: 0 5px;
+    }
+    
+    /* Hlavní obsah */
+    #page-home .main-content {
+        padding: 10px;
+    }
+    
+    /* Search a další sekce */
+    #page-home .search-section,
+    #page-home .favorites-section,
+    #page-about #forecastDivPage2 {
+        padding: 10px;
+        margin-bottom: 15px;
+    }
+    
+    /* Inputy a buttony */
+    #page-home .search-input,
+    #page-home .btn,
+    #page-about input,
+    #page-about button,
+    #page-about select {
+        padding: 10px;
+        font-size: 0.8rem;
+    }
+    
+    /* Weather info */
+    #page-home .weather-info {
+        padding: 15px 10px;
+    }
+    
+    #page-home .weather-info h2 {
+        font-size: 1.4rem;
+    }
+    
+    /* Tabulky */
+    #page-home .current-conditions-table th,
+    #page-home .current-conditions-table td,
+    #page-home .forecast-table th,
+    #page-home .forecast-table td {
+        padding: 6px 4px;
+        font-size: 0.7rem;
+        min-width: 60px;
+    }
+    
+    /* Forecast days */
+    #page-about .forecast-day {
+        min-width: 80px;
+        padding: 8px 6px;
+    }
+    
+    #page-about .forecast-icon {
+        font-size: 1.8rem;
+    }
+    
+    #page-about .weather-icon {
+        font-size: 2.5rem;
+    }
+    
+    /* Modální okna */
+    .modal-content {
+        width: 98%;
+        padding: 15px 10px;
+        margin: 0 5px;
+    }
+    
+    .modal-message {
+        font-size: 0.9rem;
+    }
+}
+
+/* Landscape orientace na mobilech */
+@media screen and (max-width: 768px) and (orientation: landscape) {
+    
+    /* Navigace v landscape */
+    nav {
+        padding: 5px;
+        margin-bottom: 8px;
+    }
+    
+    nav button {
+        padding: 5px 10px;
+        font-size: 0.8rem;
+    }
+    
+    /* Hlavičky v landscape */
+    #page-home .header {
+        padding: 15px 20px;
+    }
+    
+    #page-home .header h1 {
+        font-size: 1.8rem;
+        margin-bottom: 5px;
+    }
+    
+    #page-about h1 {
+        font-size: 1.6rem;
+        margin-bottom: 0.8rem;
+    }
+    
+    /* Search controls v landscape */
+    #page-home .search-controls {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+    
+    #page-home .search-input {
+        flex: 2;
+        min-width: 200px;
+    }
+    
+    #page-home .btn {
+        flex: 1;
+        min-width: 100px;
+    }
+    
+    /* Input container v landscape */
+    #page-about .input-container {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    
+    #page-about input {
+        flex: 2;
+        min-width: 150px;
+    }
+    
+    #page-about button,
+    #page-about select {
+        flex: 1;
+        min-width: 100px;
+    }
+    
+    /* Daily forecast v landscape */
+    #page-about .daily-forecast {
+        justify-content: flex-start;
+    }
+    
+    #page-about .forecast-day {
+        min-width: 110px;
+    }
+    
+    /* Settings v landscape */
+    #page-about .settings-row {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    #page-about .toggle-container {
+        flex-direction: row;
+        width: auto;
+    }
+}
+
+/* Vylepšení pro dotykové obrazovky */
+@media (hover: none) and (pointer: coarse) {
+    
+    /* Větší touch targets */
+    #page-home .btn,
+    #page-about button,
+    nav button {
+        min-height: 44px;
+        min-width: 44px;
+    }
+    
+    /* Remove hover efekty na touch zařízeních */
+    #page-home .btn:hover,
+    #page-about button:hover,
+    nav button:hover {
+        transform: none;
+    }
+    
+    /* Aktivní stavy místo hover */
+    #page-home .btn:active,
+    #page-about button:active,
+    nav button:active {
+        transform: scale(0.95);
+        transition: transform 0.1s;
+    }
+    
+    /* Toggle switch pro touch */
+    #page-about .toggle-switch {
+        width: 70px;
+        height: 35px;
+    }
+    
+    #page-about .slider:before {
+        height: 27px;
+        width: 27px;
+    }
+    
+    #page-about input:checked + .slider:before {
+        transform: translateX(35px);
+    }
+}
+
+/* Print styly */
+@media print {
+    
+    body {
+        background: white !important;
+        color: black !important;
+    }
+    
+    nav,
+    #page-home .btn,
+    #page-about button,
+    .modal-content {
+        display: none !important;
+    }
+    
+    #page-home .container,
+    .kontejner {
+        box-shadow: none !important;
+        border: 1px solid #ccc !important;
+        background: white !important;
+    }
+    
+    #page-home .weather-info,
+    #page-about #forecastDivPage2 {
+        background: white !important;
+        color: black !important;
+        border: 1px solid #ccc !important;
+    }
+}
+
+/* Vysoké rozlišení (Retina) */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 2dppx) {
+    
+    /* Ostřejší okraje pro vysoké rozlišení */
+    #page-home .container,
+    .kontejner,
+    #page-home .search-section,
+    #page-home .favorites-section,
+    #page-about #forecastDivPage2 {
+        border-width: 0.5px;
+    }
+    
+    /* Jemnější stíny */
+    #page-home .btn,
+    #page-about button {
+        box-shadow: 
+            0 2px 8px rgba(0, 255, 255, 0.2),
+            inset 0 0.5px 1.5px rgba(255, 255, 255, 0.2);
+    }
+}
     </style>
 </head>
 <body>
+    <nav>
+        <button onclick="showPage('page-home')">Domovská stránka</button>
+        <button onclick="showPage('page-about')" style="display: none">Chytrá předpověď</button>
+        <button id="fullscreen-btn">🔲 Celá obrazovka</button>
+       
+    </nav>
+ 
     <div class="container">
-        <h1>🌌 Počasí s AccuWeather API 🌟</h1>
-        <p>Zadej město, Jiříku, ať víme, jestli ti budou blikat LEDky! 💡</p>
-        
-        <div class="search-section">
-            <input type="text" id="city-input" placeholder="Např. Praha, Tábor, Pelhřimov...">
-            <button onclick="getWeather()">Získat počasí</button>
-            <button onclick="addToFavorites()" class="favorite-btn">➕ Přidat k oblíbeným</button>
-        </div>
-
-        <div class="favorites-section">
-            <div class="favorites-title">⭐ Oblíbená místa</div>
-            <div id="favorites-list">
+    <div id="page-home" class="page active">
+        <div class="container">
+            <button id="toggle-layout">🖥️ Přepnout na desktop</button>
+    <p>Aktuální layout: <span id="layout-status">mobilní</span></p>
+            <div class="header">
+                <h1>🌤️ Futuristiká Počasí Stanice</h1>
+                <p>Admirál Jiřík & Claude.AI - Mise: Počasí bez hranic! 🚀</p>
+            </div>
+            <div class="main-content">
+                <div class="search-section">
+                    <div class="search-controls">
+                        <input type="text" id="cityInputPage1" class="search-input" placeholder="Zadej název města (např. Praha, Brno...)" value="Praha">
+                        <button onclick="getWeatherPage1()" class="btn">🔍 Získat počasí</button>
+                        <button onclick="addToFavoritesPage1()" class="btn secondary">⭐ Přidat k oblíbeným</button>
+                    </div>
                 </div>
-        </div>
 
-        <div class="management-section">
-            <div class="management-title">🔧 Správa oblíbených míst</div>
-            <button onclick="clearAllFavorites()" class="remove-btn">🗑️ Smazat všechna místa</button>
-            <button onclick="exportFavorites()">📤 Exportovat místa</button>
-            <button onclick="showDebugInfo()">🔍 Debug localStorage</button>
-        </div>
+                <div id="errorMessagePage1" class="message error-message"></div>
+                <div id="successMessagePage1" class="message success-message"></div>
+                <div id="loadingMessagePage1" class="message loading-message">
+                    <div class="loading-spinner"></div>
+                    Načítám počasí z alternativního API...
+                </div>
 
-        <div id="loading-message" class="loading" style="display: none;">Načítám data... 🛰️</div>
-        <div id="error-message" class="error" style="display: none;"></div>
-        <div id="success-message" class="success" style="display: none;"></div>
-        <div id="weather-info"></div>
-        <div id="debug-info" class="debug-section" style="display: none;">
-            <div class="debug-title">🔍 Debug informace localStorage:</div>
-            <div id="debug-content"></div>
-        </div>
-    </div>
-    <footer>
-        Projekt inspirovaný technickými výzvami, Star Trekem a blikajícími světýlky. ✨<br>
-        Nyní s pokročilou správou oblíbených míst! 🚀
-    </footer>
+                <div class="favorites-section">
+                    <h3>🌟 Oblíbená místa</h3>
+                    <div class="favorites-controls">
+                        <button onclick="clearAllFavorites()" class="btn danger">🗑️ Smazat vše</button>
+                        <button onclick="exportFavorites()" class="btn secondary">💾 Export</button>
+                        <button onclick="showDebugInfoPage1()" class="btn secondary">🐛 Debug</button>
+                    </div>
+                    <div id="favoritesList1" class="favorites-list"></div>
+                </div>
 
-    <div id="custom-modal" class="modal-overlay">
-        <div class="modal-content">
-            <p id="modal-message"></p>
-            <div class="modal-buttons">
-                <button id="modal-confirm-btn" class="confirm-btn">Ano</button>
-                <button id="modal-cancel-btn" class="cancel-btn">Zrušit</button>
+                <div id="weatherInfoPage1" class="weather-info"></div>
+
+                <div id="debugInfoPage1" class="debug-section">
+                    <h3>🔧 Debug informace</h3>
+                    <div id="debugContentPage1"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="custom-modal" class="custom-modal">
+            <div class="modal-content">
+                <div id="modal-message" class="modal-message"></div>
+                <div class="modal-buttons">
+                    <button id="modal-confirm-btn" class="btn">✅ Ano</button>
+                    <button id="modal-cancel-btn" class="btn secondary">❌ Ne</button>
+                </div>
             </div>
         </div>
     </div>
 
+    <div id="page-about" class="page">
+        <div class="kontejner">
+        <h1>Chytrá předpověď počasí</h1>
+        <div class="settings-row">
+                       <div class="toggle-container">
+                <span class="toggle-label">Noční režim</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="nightModeToggle">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="toggle-container">
+                <span class="toggle-label">Star Trek režim</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="starTrekModeToggle">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <select id="unitsSelect">
+                <option value="metric">°C, m/s</option>
+                <option value="imperial">°F, mph</option>
+            </select>
+        </div>
+        <div class="input-container">
+            <input type="text" id="cityInputPage2" placeholder="Zadej město" list="citySuggestions" />
+            <datalist id="citySuggestions"></datalist>
+            <button id="getWeatherPage2Btn">Získej předpověď</button>
+            <button id="addFavoritePage2Btn" title="Přidat do oblíbených">❤️</button>
+        </div>
+        <div class="favorites-container">
+            <div class="favorites-title">
+                Oblíbená města
+            </div>
+            <div class="favorites-list" id="favoritesList2"></div>
+        </div>
+        <div id="forecastDivPage2"></div>
+        <div id="lastUpdatedDivPage2"></div>
+        <div class="footer">
+            Data poskytuje OpenWeatherMap | Vytvořeno s ❤️ a 🖖
+        </div>
+    </div>
+</div>
     <script>
-        // *** SEM VLOŽ SVŮJ ACCUWEATHER API KLÍČ! ***
-        // Jiříku, tvůj klíč je tam správně, jen jsem to nechal jako připomínku pro ostatní!
-        const ACCUWEATHER_API_KEY = "CFM41jgyDxgyOgRSUJxcDRF5TWIWv7kg";
+        // === KONFIGURACE A GLOBÁLNÍ PROMĚNNÉ ===
 
-        // URL pro AccuWeather API
-        const LOCATION_SEARCH_URL = "https://dataservice.accuweather.com/locations/v1/cities/search";
-        const CURRENT_CONDITIONS_URL = "https://dataservice.accuweather.com/currentconditions/v1/";
-        const FORECAST_5_DAY_URL = "https://dataservice.accuweather.com/forecasts/v1/daily/5day/";
-        
-        // Globální proměnná pro aktuální město
-        let currentCity = "";
+        // DŮLEŽITÉ: Používáme nový API klíč z druhého kódu.
+        // Pro produkční nasazení zvažte backendové řešení pro jeho zabezpečení.
+        const OPENWEATHER_API_KEY = "bd3f6063df8394ca51477cce107c8960";
+        const OPENWEATHER_BASE_URL = "https://api.openweathermap.org/data/2.5";
+        const OPENWEATHER_GEOCODING_URL = "https://api.openweathermap.org/geo/1.0/direct";
 
-        // === MAPOVÁNÍ ČÍSEL IKON NA EMOJI ===
-        // Toto je ta "vlastní ikonka přímo v kódu", Jiříku!
+        // Záložní wttr.in API (funguje bez klíče, ale má méně detailů)
+        const WTTR_BASE_URL = "https://wttr.in";
+
+        let currentCityPage1 = ""; // Pro sledování města na první stránce
+
+        // === MAPOVÁNÍ PODMÍNEK NA EMOJI (OpenWeatherMap weather IDs) ===
+        // Kompletní seznam ID: https://openweathermap.org/weather-conditions
         const weatherIconMap = {
-            1: '☀️', // Slunečno
-            2: '🌤️', // Většinou slunečno
-            3: '⛅', // Střídavě oblačno
-            4: '☁️', // Skoro zataženo (tvůj 4)
-            5: '☁️', // Částečně zataženo
-            6: '☁️', // Skoro zataženo (tvůj 6)
-            7: '☁️', // Zataženo
-            8: '☁️', // Šedé
-            11: '🌫️', // Mlha
-            12: '🌧️', // Přeháňky
-            13: '🌦️', // Přeháňky / částečně slunečno
-            14: '⛈️', // Přeháňky s bouřkami
-            15: '⛈️', // Bouřky (tvůj 15)
-            16: '🌩️', // Skoro zataženo s bouřkami (tvůj 16 - vybral jsem blesk pro odlišení od 15)
-            17: '🌩️', // Přeháňky s blesky
-            18: '🌧️', // Déšť (tvůj 18)
-            19: '🌨️', // Sníh
-            20: '🌨️', // Skoro zataženo se sněhem
-            21: '❄️', // Částečně slunečno se sněhem
-            22: '❄️', // Sněžení
-            23: '🌨️', // Mrznoucí déšť / sníh
-            24: '🧊', // Led
-            25: '🌨️', // Smíšené srážky
-            26: '🌨️', // Mrznoucí déšť
-            29: '🌨️', // Sníh
-            30: '🔥', // Horko
-            31: '🥶', // Zima
-            32: '💨', // Větrno
-            33: '✨', // Jasno (noc)
-            34: '☁️', // Většinou jasno (noc)
-            35: '☁️', // Částečně zataženo (noc)
-            36: '☁️', // Skoro zataženo (noc)
-            37: '☁️', // Střídavě zataženo (noc)
-            38: '☁️', // Skoro zataženo (noc)
-            39: '🌧️', // Přeháňky (noc)
-            40: '🌧️', // Občasné přeháňky (noc)
-            41: '⛈️', // Bouřky (noc)
-            42: '🌩️', // Přeháňky s blesky (noc)
-            43: '🌨️', // Sněžení (noc)
-            44: '❄️'  // Smíšené srážky (noc)
+            200: '⛈️', 201: '⛈️', 202: '⛈️', 210: '🌩️', 211: '🌩️', 212: '🌩️', 221: '🌩️', 230: '⛈️', 231: '⛈️', 232: '⛈️', // Thunderstorm
+            300: '🌦️', 301: '🌦️', 302: '🌧️', 310: '🌧️', 311: '🌧️', 312: '🌧️', 313: '🌧️', 314: '🌧️', 321: '🌧️', // Drizzle
+            500: '🌧️', 501: '🌧️', 502: '🌧️', 503: '🌧️', 504: '🌧️', 511: '🧊', 520: '🌦️', 521: '🌦️', 522: '🌧️', 531: '🌧️', // Rain
+            600: '🌨️', 601: '❄️', 602: '❄️', 611: '🧊', 612: '🧊', 613: '🧊', 615: '🌨️', 616: '🌨️', 620: '🌨️', 621: '❄️', 622: '❄️', // Snow
+            701: '🌫️', 711: '💨', 721: '🌫️', 731: '💨', 741: '🌫️', 751: '💨', 761: '💨', 762: '🌋', 771: '💨', 781: '🌪️', // Atmosphere
+            800: '☀️', // Clear
+            801: '🌤️', 802: '⛅', 803: '☁️', 804: '☁️' // Clouds
         };
-
-        // Funkce pro získání emoji ikony
-        const getEmojiIcon = (iconNumber) => {
-            return weatherIconMap[iconNumber] || '❓'; // Vrátí emoji nebo otazník, pokud není v mapě
-        };
-
-        // === VLASTNÍ MODÁLNÍ DIALOG ===
-        let resolveModalPromise;
 
         /**
-         * Zobrazí vlastní modální dialog s potvrzením.
-         * @param {string} message Zpráva, která se zobrazí v dialogu.
-         * @returns {Promise<boolean>} Promise, který se vyřeší na true (potvrzeno) nebo false (zrušeno).
+         * Slovník pro překlad běžných anglických popisů počasí (např. z wttr.in) do češtiny.
          */
+        const weatherDescriptionTranslations = {
+            "clear": "Jasno", "sunny": "Slunečno", "partly cloudy": "Částečně zataženo",
+            "cloudy": "Zataženo", "overcast": "Zataženo", "mist": "Mlha", "fog": "Mlha",
+            "patchy rain nearby": "Místní přeháňky", "light rain": "Lehký déšť",
+            "moderate rain": "Mírný déšť", "heavy rain": "Silný déšť",
+            "light snow": "Lehké sněžení", "moderate snow": "Mírné sněžení",
+            "heavy snow": "Silné sněžení", "light drizzle": "Jemné mrholení",
+            "freezing fog": "Mrznoucí mlha", "freezing drizzle": "Mrznoucí mrholení",
+            "freezing rain": "Mrznoucí déšť", "light freezing rain": "Lehký mrznoucí déšť",
+            "heavy freezing rain": "Silný mrznoucí déšť", "thunderstorm": "Bouřka",
+            "light rain shower": "Lehká přeháňka", "rain shower": "Přeháňka",
+            "heavy rain shower": "Silná přeháňka", "light snow shower": "Lehká sněhová přeháňka",
+            "snow shower": "Sněhová přeháňka", "heavy snow shower": "Silná sněhová přeháňka",
+            "ice pellets": "Ledové krupky", "light sleet": "Lehký déšť se sněhem",
+            "sleet": "Déšť se sněhem", "blowing snow": "Závěje", "blizzard": "Vánice",
+            "windy": "Větrno", "hail": "Krupobití", "tornado": "Tornádo",
+            "dust": "Prach", "sand": "Písek", "volcanic ash": "Sopečný popel",
+            "squalls": "Přeháňky", "smoke": "Kouř", "haze": "Opar", "drizzle": "Mrholení",
+            "light rain and snow": "Lehký déšť se sněhem", "moderate or heavy rain and snow": "Mírný nebo silný déšť se sněhem",
+            "patchy light drizzle": "Místní lehké mrholení", "patchy light rain": "Místní lehký déšť",
+            "patchy moderate rain": "Místní mírný déšť", "patchy heavy rain": "Místní silný déšť",
+            "patchy light snow": "Místní lehké sněžení", "patchy moderate snow": "Místní mírné sněžení",
+            "patchy heavy snow": "Místní silné sněžení", "patchy light sleet": "Místní lehký déšť se sněhem",
+            "patchy moderate or heavy sleet": "Místní mírný nebo silný déšť se sněhem",
+            "patchy light freezing drizzle": "Místní lehké mrznoucí mrholení",
+            "thundery outbreaks in nearby": "Bouřky v okolí", "patchy light rain with thunder": "Místní lehký déšť s hromy",
+            "moderate or heavy rain with thunder": "Mírný nebo silný déšť s hromy",
+            "patchy light snow with thunder": "Místní lehké sněžení s hromy",
+            "moderate or heavy snow with thunder": "Mírné nebo silné sněžení s hromy",
+            "light showers of ice pellets": "Lehké přeháňky ledových krupek",
+            "moderate or heavy showers of ice pellets": "Mírné nebo silné přeháňky ledových krupek",
+            "patchy light rain in area": "Místní lehký déšť v oblasti",
+            "patchy light snow in area": "Místní lehké sněžení v oblasti",
+            "patchy light sleet in area": "Místní lehký déšť se sněhem v oblasti",
+            "patchy light freezing rain in area": "Místní lehký mrznoucí déšť v oblasti",
+            "patchy light drizzle in area": "Místní lehké mrholení v oblasti"
+        };
+
+        /**
+         * Získá emoji ikonu na základě ID nebo textového popisu počasí.
+         * @param {number|null} iconId ID ikony (pro OpenWeatherMap).
+         * @param {string} description Textový popis počasí (pro wttr.in fallback).
+         * @returns {string} Emoji ikona.
+         */
+        const getEmojiIcon = (iconId, description = '') => {
+            if (iconId && weatherIconMap[iconId]) {
+                return weatherIconMap[iconId];
+            }
+
+            // Fallback pro popisy (např. z wttr.in)
+            const lowerDesc = description.toLowerCase();
+            if (lowerDesc.includes('clear') || lowerDesc.includes('sunny')) return '☀️';
+            if (lowerDesc.includes('partly cloudy')) return '⛅';
+            if (lowerDesc.includes('cloudy') || lowerDesc.includes('overcast')) return '☁️';
+            if (lowerDesc.includes('rain') || lowerDesc.includes('drizzle')) return '🌧️';
+            if (lowerDesc.includes('snow') || lowerDesc.includes('sleet')) return '🌨️';
+            if (lowerDesc.includes('fog') || lowerDesc.includes('mist')) return '🌫️';
+            if (lowerDesc.includes('thunder') || lowerDesc.includes('storm')) return '⛈️';
+            if (lowerDesc.includes('wind')) return '💨';
+            if (lowerDesc.includes('patchy rain')) return '🌦️';
+            
+            return '❓';
+        };
+
+        /**
+         * Přeloží anglický popis počasí do češtiny.
+         * @param {string} description Anglický popis.
+         * @returns {string} Český popis nebo původní anglický, pokud není překlad.
+         */
+        const translateDescription = (description) => {
+            const lowerDesc = description.toLowerCase();
+            return weatherDescriptionTranslations[lowerDesc] || description;
+        };
+
+        // === MODÁLNÍ DIALOG (sdílený pro obě stránky) ===
+        let resolveModalPromise;
+
         function showCustomConfirm(message) {
             const modalOverlay = document.getElementById('custom-modal');
             const modalMessage = document.getElementById('modal-message');
@@ -442,7 +2182,7 @@
             modalOverlay.classList.add('visible');
 
             return new Promise(resolve => {
-                resolveModalPromise = resolve; // Uložíme resolve funkci pro pozdější použití
+                resolveModalPromise = resolve;
 
                 const handleConfirm = () => {
                     modalOverlay.classList.remove('visible');
@@ -463,48 +2203,45 @@
             });
         }
 
-        // === SPRÁVA OBLÍBENÝCH MÍST ===
-        
-        // Načtení oblíbených míst z localStorage
+        // === SPRÁVA OBLÍBENÝCH MÍST (sdílená pro obě stránky) ===
         function loadFavorites() {
             try {
                 const favorites = localStorage.getItem('weatherFavorites');
                 return favorites ? JSON.parse(favorites) : getDefaultFavorites();
             } catch (error) {
                 console.error('Chyba při načítání oblíbených z localStorage:', error);
-                showErrorMessage('Chyba při načítání oblíbených míst. Zkus to znovu.');
+                showErrorMessagePage1('Chyba při načítání oblíbených míst. Zkus to znovu.');
                 return getDefaultFavorites();
             }
         }
 
-        // Výchozí oblíbená místa (můžeš upravit podle svých preferencí, Jiříku!)
         function getDefaultFavorites() {
+            // Používám Jiříkovy oblíbené lokace
             return [
-                'Praha',
-                'Pelhřimov',
-                'Tábor',
-                'Brno',
-                'Ostrava'
+                'Praha', 'Pelhřimov', 'Tábor', 'Brno', 'Ostrava', 'Plzeň', 'Liberec', 'Olomouc',
+                'České Budějovice', 'Hradec Králové', 'Ústí nad Labem', 'Pardubice',
+                'Zlín', 'Havířov', 'Kladno', 'Most', 'Opava', 'Frýdek-Místek',
+                'Jihlava', 'Karviná', 'Teplice', 'Děčín', 'Humpolec', 'Čejov',
+                'Černovice u Tábora', 'Hammamet', 'Vranov Nad Dyjí',
             ];
         }
 
-        // Uložení oblíbených míst do localStorage
         function saveFavorites(favorites) {
             try {
                 localStorage.setItem('weatherFavorites', JSON.stringify(favorites));
-                showSuccessMessage('Oblíbené místa uložena! 💾');
+                showSuccessMessagePage1('Oblíbené místa uložena! 💾');
                 return true;
             } catch (error) {
                 console.error('Chyba při ukládání oblíbených do localStorage:', error);
-                showErrorMessage('Chyba při ukládání do localStorage: ' + error.message);
+                showErrorMessagePage1('Chyba při ukládání do localStorage: ' + error.message);
                 return false;
             }
         }
 
-        // Zobrazení oblíbených míst
-        function displayFavorites() {
+        // Funkce pro zobrazení oblíbených na stránce 1
+        function displayFavoritesPage1() {
             const favorites = loadFavorites();
-            const favoritesListDiv = document.getElementById('favorites-list');
+            const favoritesListDiv = document.getElementById('favoritesList1');
             
             if (favorites.length === 0) {
                 favoritesListDiv.innerHTML = '<p style="color: #90a0b8;">Žádná oblíbená místa. Přidej nějaké! 🏙️</p>';
@@ -515,127 +2252,154 @@
             favorites.forEach((city, index) => {
                 html += `
                     <div class="favorite-item">
-                        <button onclick="getWeatherForCity('${city}')" class="favorite-btn">🌤️ ${city}</button>
-                        <button onclick="removeFavorite(${index})" class="remove-btn">❌</button>
+                        <button onclick="getWeatherForCityPage1('${city}')" class="favorite-btn">🌤️ ${city}</button>
+                        <button onclick="removeFavorite('${city}')" class="remove-btn">❌</button>
                     </div>
                 `;
             });
-            
             favoritesListDiv.innerHTML = html;
         }
 
-        // Přidání města k oblíbeným
-        function addToFavorites() {
-            const cityInput = document.getElementById("city-input").value.trim();
-            
+        // Funkce pro zobrazení oblíbených na stránce 2
+        function updateFavoritesPage2() {
+            const favorites = loadFavorites(); // Používáme sdílené oblíbené
+            const favoritesListDiv = document.getElementById('favoritesList2');
+            favoritesListDiv.innerHTML = '';
+            if (favorites.length === 0) {
+                favoritesListDiv.innerHTML = '<span style="opacity: 0.7;">Žádná oblíbená města</span>';
+                return;
+            }
+            favorites.forEach(city => {
+                const favoriteItem = document.createElement('div');
+                favoriteItem.className = 'favorite-city';
+                favoriteItem.innerHTML = `
+                    <span class="favorite-icon">❤️</span>
+                    <span>${city}</span>
+                    <span class="remove-favorite" data-city="${city}">✖</span>
+                `;
+                const removeButton = favoriteItem.querySelector('.remove-favorite');
+                removeButton.addEventListener('click', (event) => {
+                    event.stopPropagation(); // Zabránění vyvolání události na rodičovském elementu
+                    const cityToRemove = removeButton.dataset.city;
+                    removeFavorite(cityToRemove); // Voláme sdílenou funkci
+                });
+                favoriteItem.addEventListener('click', () => {
+                    document.getElementById('cityInputPage2').value = city;
+                    getWeatherForecastPage2();
+                });
+                favoritesListDiv.appendChild(favoriteItem);
+            });
+        }
+
+        function addToFavoritesPage1() {
+            const cityInput = document.getElementById("cityInputPage1").value.trim();
+            addFavorite(cityInput); // Voláme sdílenou funkci
+        }
+
+        function addFavoritePage2() {
+            const cityToAdd = document.getElementById('cityInputPage2').value.trim();
+            addFavorite(cityToAdd); // Voláme sdílenou funkci
+        }
+
+        // Sdílená funkce pro přidání do oblíbených
+        function addFavorite(cityInput) {
             if (!cityInput) {
-                showErrorMessage('Zadej název města, které chceš přidat k oblíbeným! 🏙️');
+                showErrorMessagePage1('Zadej název města, které chceš přidat k oblíbeným! 🏙️');
                 return;
             }
 
             const favorites = loadFavorites();
             
-            // Kontrola, jestli město už není v oblíbených
             if (favorites.includes(cityInput)) {
-                showErrorMessage(`Město "${cityInput}" už máš v oblíbených! ⭐`);
+                showErrorMessagePage1(`Město "${cityInput}" už máš v oblíbených! ⭐`);
                 return;
             }
 
             favorites.push(cityInput);
             
             if (saveFavorites(favorites)) {
-                displayFavorites();
-                showSuccessMessage(`Město "${cityInput}" přidáno k oblíbeným! ⭐`);
+                displayFavoritesPage1(); // Aktualizovat zobrazení na stránce 1
+                updateFavoritesPage2(); // Aktualizovat zobrazení na stránce 2
+                showSuccessMessagePage1(`Město "${cityInput}" přidáno k oblíbeným! ⭐`);
             }
         }
 
-        // Odebrání města z oblíbených
-        async function removeFavorite(index) {
+        // Sdílená funkce pro odebrání z oblíbených
+        async function removeFavorite(cityName) {
             const favorites = loadFavorites();
-            const cityName = favorites[index];
+            const index = favorites.indexOf(cityName);
             
+            if (index === -1) return; // Město není v oblíbených
+
             const confirmed = await showCustomConfirm(`Opravdu chceš odebrat "${cityName}" z oblíbených míst?`);
             
             if (confirmed) {
                 favorites.splice(index, 1);
-                
                 if (saveFavorites(favorites)) {
-                    displayFavorites();
-                    showSuccessMessage(`Město "${cityName}" odebráno z oblíbených! 🗑️`);
+                    displayFavoritesPage1();
+                    updateFavoritesPage2();
+                    showSuccessMessagePage1(`Město "${cityName}" odebráno z oblíbených! 🗑️`);
                 }
             }
         }
 
-        // Vymazání všech oblíbených míst
         async function clearAllFavorites() {
             const confirmed = await showCustomConfirm('Opravdu chceš smazat VŠECHNA oblíbená místa? Tato akce je nevratná!');
             
             if (confirmed) {
                 if (saveFavorites([])) {
-                    displayFavorites();
-                    showSuccessMessage('Všechna oblíbená místa smazána! 🧹');
+                    displayFavoritesPage1();
+                    updateFavoritesPage2();
+                    showSuccessMessagePage1('Všechna oblíbená místa smazána! 🧹');
                 }
             }
         }
 
-        // Export oblíbených míst (pro zálohu)
         function exportFavorites() {
             const favorites = loadFavorites();
             const dataStr = JSON.stringify(favorites, null, 2);
             
-            // Vytvoření souboru ke stažení
             const dataBlob = new Blob([dataStr], {type: 'application/json'});
             const url = URL.createObjectURL(dataBlob);
             const link = document.createElement('a');
             link.href = url;
             link.download = 'weather_favorites_backup.json';
-            document.body.appendChild(link); // Přidat do DOM, aby bylo možné kliknout
+            document.body.appendChild(link);
             link.click();
-            document.body.removeChild(link); // Odebrat po kliknutí
+            document.body.removeChild(link);
             
-            showSuccessMessage('Oblíbená místa exportována! 📁');
+            showSuccessMessagePage1('Oblíbená místa exportována! 📁');
         }
 
-        // Získání počasí pro konkrétní město z oblíbených
-        function getWeatherForCity(cityName) {
-            document.getElementById("city-input").value = cityName;
-            getWeather();
+        function getWeatherForCityPage1(cityName) {
+            document.getElementById("cityInputPage1").value = cityName;
+            getWeatherPage1();
         }
 
-        // === POMOCNÉ FUNKCE PRO ZPRÁVY ===
-        
-        function showErrorMessage(message) {
-            const errorDiv = document.getElementById("error-message");
+        // === POMOCNÉ FUNKCE PRO ZPRÁVY (specifické pro stránku 1) ===
+        function showErrorMessagePage1(message) {
+            const errorDiv = document.getElementById("errorMessagePage1");
             errorDiv.textContent = message;
             errorDiv.style.display = "block";
-            
-            // Automatické skrytí po 5 sekundách
-            setTimeout(() => {
-                errorDiv.style.display = "none";
-            }, 5000);
+            setTimeout(() => { errorDiv.style.display = "none"; }, 5000);
         }
 
-        function showSuccessMessage(message) {
-            const successDiv = document.getElementById("success-message");
+        function showSuccessMessagePage1(message) {
+            const successDiv = document.getElementById("successMessagePage1");
             successDiv.textContent = message;
             successDiv.style.display = "block";
-            
-            // Automatické skrytí po 3 sekundách
-            setTimeout(() => {
-                successDiv.style.display = "none";
-            }, 3000);
+            setTimeout(() => { successDiv.style.display = "none"; }, 3000);
         }
 
-        function hideAllMessages() {
-            document.getElementById("error-message").style.display = "none";
-            document.getElementById("success-message").style.display = "none";
+        function hideAllMessagesPage1() {
+            document.getElementById("errorMessagePage1").style.display = "none";
+            document.getElementById("successMessagePage1").style.display = "none";
         }
 
-        // === DEBUG FUNKCE ===
-        
-        function showDebugInfo() {
-            const debugDiv = document.getElementById("debug-info");
-            const debugContent = document.getElementById("debug-content");
+        // === DEBUG FUNKCE (specifické pro stránku 1) ===
+        function showDebugInfoPage1() {
+            const debugDiv = document.getElementById("debugInfoPage1");
+            const debugContent = document.getElementById("debugContentPage1");
             
             try {
                 const favorites = loadFavorites();
@@ -644,219 +2408,801 @@
                 let debugHtml = `
                     <p><strong>Počet oblíbených míst:</strong> ${favorites.length}</p>
                     <p><strong>Velikost dat:</strong> ${storageSize} bytů</p>
+                    <p><strong>Aktuální město:</strong> ${currentCityPage1 || 'Žádné'}</p>
                     <p><strong>Obsah 'weatherFavorites' v localStorage:</strong></p>
                     <pre style="background-color: #0f1825; padding: 10px; border-radius: 5px; overflow-x: auto;">
 ${JSON.stringify(favorites, null, 2)}
                     </pre>
-                    <p><strong>Celkový obsah localStorage:</strong></p>
-                    <pre style="background-color: #0f1825; padding: 10px; border-radius: 5px; overflow-x: auto; max-height: 200px; overflow-y: auto;">
-`;
-                
-                // Zobrazení všech klíčů v localStorage
-                for (let i = 0; i < localStorage.length; i++) {
-                    const key = localStorage.key(i);
-                    const value = localStorage.getItem(key);
-                    debugHtml += `${key}: ${value}\n`;
-                }
-                
-                debugHtml += `</pre>`;
+                    <p><strong>API Status:</strong></p>
+                    <pre style="background-color: #0f1825; padding: 10px; border-radius: 5px;">
+OpenWeatherMap API: ${OPENWEATHER_API_KEY && OPENWEATHER_API_KEY !== "d4f6e1a4c5b3f8e2a9c7d1e6f3b8c2a5" ? 'Nakonfigurováno (vlastní klíč)' : 'Používá demo klíč (doporučeno vyměnit!)'}
+Záložní API: wttr.in (funguje bez klíče)
+                    </pre>
+                `;
                 
                 debugContent.innerHTML = debugHtml;
                 debugDiv.style.display = debugDiv.style.display === "none" ? "block" : "none";
-                
             } catch (error) {
                 debugContent.innerHTML = `<p style="color: #ff6b6b;">Chyba při načítání debug informací: ${error.message}</p>`;
                 debugDiv.style.display = "block";
             }
         }
 
-        // === HLAVNÍ FUNKCE PRO POČASÍ ===
-        
-        async function getWeather() {
-            const cityInput = document.getElementById("city-input").value.trim();
-            const weatherInfoDiv = document.getElementById("weather-info");
-            const loadingMessageDiv = document.getElementById("loading-message");
+        // === ZÍSKÁNÍ DAT Z OPENWEATHERMAP API (sdílené) ===
+        /**
+         * Získá aktuální počasí a 5denní předpověď z OpenWeatherMap API.
+         * @param {string} city Název města.
+         * @param {string} units Jednotky ('metric' nebo 'imperial').
+         * @returns {Promise<object|null>} Zformátovaná data počasí nebo null při chybě.
+         */
+        async function getWeatherFromOpenWeather(city, units = 'metric') {
+            if (!OPENWEATHER_API_KEY || OPENWEATHER_API_KEY === "d4f6e1a4c5b3f8e2a9c7d1e6f3b8c2a5") {
+                console.warn("OpenWeatherMap API klíč není nastaven nebo je demo klíč. Přeskočeno na záložní API.");
+                return null;
+            }
 
-            // Skrytí všech zpráv a předchozích výsledků
-            hideAllMessages();
+            try {
+                // Krok 1: Získání zeměpisných souřadnic (latitude, longitude)
+                const geoUrl = `${OPENWEATHER_GEOCODING_URL}?q=${encodeURIComponent(city)}&limit=1&appid=${OPENWEATHER_API_KEY}`;
+                console.log(`Volám OpenWeatherMap Geocoding API: ${geoUrl}`);
+                const geoResponse = await fetch(geoUrl);
+                if (!geoResponse.ok) {
+                    const errorText = await geoResponse.text();
+                    console.error("Chyba při OpenWeatherMap Geocoding API:", geoResponse.status, errorText);
+                    throw new Error(`OpenWeatherMap Geocoding API vrátilo chybu ${geoResponse.status}: ${errorText || geoResponse.statusText}`);
+                }
+                const geoData = await geoResponse.json();
+                console.log("OpenWeatherMap Geocoding Data:", geoData);
+
+                if (geoData.length === 0) {
+                    console.warn(`Město "${city}" nenalezeno přes OpenWeatherMap Geocoding.`);
+                    return null;
+                }
+                const { lat, lon, name, country } = geoData[0]; // Získáme název města a zemi z geocodingu
+                const cityName = `${name}, ${country}`; // Pro zobrazení
+
+                // Krok 2: Získání aktuálního počasí
+                const currentUrl = `${OPENWEATHER_BASE_URL}/weather?lat=${lat}&lon=${lon}&appid=${OPENWEATHER_API_KEY}&units=${units}&lang=cz`;
+                console.log(`Volám OpenWeatherMap Current Weather API: ${currentUrl}`);
+                const currentResponse = await fetch(currentUrl);
+                if (!currentResponse.ok) {
+                    const errorText = await currentResponse.text();
+                    console.error("Chyba při OpenWeatherMap Current Weather API:", currentResponse.status, errorText);
+                    throw new Error(`OpenWeatherMap Current Weather API vrátilo chybu ${currentResponse.status}: ${errorText || currentResponse.statusText}`);
+                }
+                const currentData = await currentResponse.json();
+                console.log("OpenWeatherMap Current Weather Data:", currentData);
+
+                // Krok 3: Získání 5denní/3hodinové předpovědi
+                const forecastUrl = `${OPENWEATHER_BASE_URL}/forecast?lat=${lat}&lon=${lon}&appid=${OPENWEATHER_API_KEY}&units=${units}&lang=cz`;
+                console.log(`Volám OpenWeatherMap 5-Day Forecast API: ${forecastUrl}`);
+                const forecastResponse = await fetch(forecastUrl);
+                if (!forecastResponse.ok) {
+                    const errorText = await forecastResponse.text();
+                    console.error("Chyba při OpenWeatherMap 5-Day Forecast API:", forecastResponse.status, errorText);
+                    throw new Error(`OpenWeatherMap 5-Day Forecast API vrátilo chybu ${forecastResponse.status}: ${errorText || forecastResponse.statusText}`);
+                }
+                const forecastData = await forecastResponse.json();
+                console.log("OpenWeatherMap 5-Day Forecast Data:", forecastData);
+
+                // --- Zformátování dat do jednotné struktury pro zobrazení ---
+                const formattedCurrent = {
+                    cityName: cityName,
+                    temperature: currentData.main.temp,
+                    description: currentData.weather[0].description,
+                    icon: currentData.weather[0].id, // OpenWeatherMap ID pro mapování na emoji
+                    feelsLike: currentData.main.feels_like,
+                    humidity: currentData.main.humidity,
+                    windSpeed: currentData.wind.speed,
+                    windDirection: currentData.wind.deg, // Stupně, pro textovou reprezentaci bude potřeba převést
+                    pressure: currentData.main.pressure,
+                    visibility: currentData.visibility / 1000, // z metrů na km
+                    cloudCover: currentData.clouds.all,
+                    sunrise: new Date(currentData.sys.sunrise * 1000).toLocaleTimeString('cs-CZ'),
+                    sunset: new Date(currentData.sys.sunset * 1000).toLocaleTimeString('cs-CZ'),
+                    lastUpdate: new Date(currentData.dt * 1000).toLocaleTimeString('cs-CZ')
+                };
+
+                const formattedForecast = [];
+                const dailyForecastsMap = new Map(); // Použijeme Map pro uchování unikátních dnů a jejich dat
+
+                forecastData.list.forEach(item => {
+                    const date = new Date(item.dt * 1000);
+                    const dateKey = date.toISOString().split('T')[0]; // Klíč "YYYY-MM-DD" pro unikátní den
+
+                    // Zahrnujeme pouze předpovědi pro dnešek a budoucí dny (od půlnoci)
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0); // Normalizujeme dnešek na začátek dne
+                    const itemDay = new Date(date);
+                    itemDay.setHours(0, 0, 0, 0); // Normalizujeme datum položky na začátek dne
+
+                    if (itemDay.getTime() < today.getTime()) {
+                        return; // Přeskočíme položky z minulých dnů
+                    }
+
+                    if (!dailyForecastsMap.has(dateKey)) {
+                        // První položka pro tento den
+                        dailyForecastsMap.set(dateKey, {
+                            date: date,
+                            minTemp: item.main.temp_min,
+                            maxTemp: item.main.temp_max,
+                            dayDescription: item.weather[0].description,
+                            dayIcon: item.weather[0].id,
+                            nightDescription: item.weather[0].description, // Výchozí, upřesníme později
+                            nightIcon: item.weather[0].id, // Výchozí, upřesníme později
+                            hasRain: item.weather[0].main.toLowerCase().includes('rain') || item.weather[0].description.toLowerCase().includes('déšť'),
+                            hasSnow: item.weather[0].main.toLowerCase().includes('snow') || item.weather[0].description.toLowerCase().includes('sníh'),
+                            hourlyData: [] // Uložíme všechna hodinová data pro tento den
+                        });
+                    } else {
+                        // Aktualizujeme min/max teploty pro existující den
+                        const existingDay = dailyForecastsMap.get(dateKey);
+                        existingDay.minTemp = Math.min(existingDay.minTemp, item.main.temp_min);
+                        existingDay.maxTemp = Math.max(existingDay.maxTemp, item.main.temp_max);
+                        if (item.weather[0].main.toLowerCase().includes('rain')) existingDay.hasRain = true;
+                        if (item.weather[0].main.toLowerCase().includes('snow')) existingDay.hasSnow = true;
+                    }
+                    dailyForecastsMap.get(dateKey).hourlyData.push(item);
+                });
+
+                // Převedeme Map na pole, seřadíme a upřesníme popisy den/noc
+                Array.from(dailyForecastsMap.values())
+                    .sort((a, b) => a.date - b.date) // Seřadíme dny chronologicky
+                    .slice(0, 6) // Vezmeme pouze prvních 5 dnů
+                    .forEach(day => {
+                        // Najdeme reprezentativní položku pro den (např. kolem poledne) a noc (např. pozdní večer/brzké ráno)
+                        const dayItem = day.hourlyData.find(h => new Date(h.dt * 1000).getHours() >= 10 && new Date(h.dt * 1000).getHours() <= 14) || day.hourlyData[0];
+                        const nightItem = day.hourlyData.find(h => new Date(h.dt * 1000).getHours() >= 20 || new Date(h.dt * 1000).getHours() < 4) || day.hourlyData[day.hourlyData.length - 1];
+
+                        formattedForecast.push({
+                            date: day.date,
+                            minTemp: day.minTemp,
+                            maxTemp: day.maxTemp,
+                            dayDescription: dayItem.weather[0].description,
+                            dayIcon: dayItem.weather[0].id,
+                            nightDescription: nightItem.weather[0].description,
+                            nightIcon: nightItem.weather[0].id,
+                            dayPrecipitationProbability: (day.hasRain || day.hasSnow) ? 'Ano' : 'Ne',
+                            nightPrecipitationProbability: (day.hasRain || day.hasSnow) ? 'Ano' : 'Ne'
+                        });
+                    });
+
+                return {
+                    source: 'OpenWeatherMap',
+                    current: formattedCurrent,
+                    forecast: formattedForecast
+                };
+
+            } catch (error) {
+                console.error("Chyba při získávání počasí z OpenWeatherMap:", error);
+                showErrorMessagePage1(`Chyba OpenWeatherMap: ${error.message}. Zkusím záložní API.`);
+                return null;
+            }
+        }
+
+        // === ZÍSKÁNÍ DAT Z WTTR.IN API (záložní, sdílené) ===
+        /**
+         * Získá aktuální počasí a předpověď z wttr.in API.
+         * @param {string} city Název města.
+         * @returns {Promise<object|null>} Zformátovaná data počasí nebo null při chybě.
+         */
+        async function getWeatherFromWttr(city) {
+            try {
+                const wttrUrl = `${WTTR_BASE_URL}/${encodeURIComponent(city)}?format=j1`;
+                console.log(`Volám wttr.in API: ${wttrUrl}`);
+                const response = await fetch(wttrUrl);
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error("Chyba při wttr.in API:", response.status, errorText);
+                    throw new Error(`wttr.in API vrátilo chybu ${response.status}: ${errorText || response.statusText}`);
+                }
+                const data = await response.json();
+                console.log("wttr.in Data:", data);
+
+                if (!data.current_condition || data.current_condition.length === 0 || !data.weather || data.weather.length === 0) {
+                    throw new Error("Nepodařilo se získat data z wttr.in.");
+                }
+
+                const current = data.current_condition[0];
+                const formattedCurrent = {
+                    cityName: data.nearest_area && data.nearest_area.length > 0 ? `${data.nearest_area[0].areaName[0].value}, ${data.nearest_area[0].country[0].value}` : city,
+                    temperature: parseFloat(current.temp_C),
+                    description: translateDescription(current.weatherDesc[0].value), // Překlad
+                    icon: null, // wttr.in nemá přímo ID pro mapování na emoji, použijeme obecné
+                    feelsLike: parseFloat(current.FeelsLikeC),
+                    humidity: parseFloat(current.humidity),
+                    windSpeed: parseFloat(current.windspeedKmph),
+                    windDirection: current.winddir16Point,
+                    pressure: parseFloat(current.pressure),
+                    visibility: parseFloat(current.visibility),
+                    cloudCover: parseFloat(current.cloudcover),
+                    sunrise: data.weather[0].astronomy[0].sunrise,
+                    sunset: data.weather[0].astronomy[0].sunset,
+                    lastUpdate: new Date().toLocaleTimeString('cs-CZ') // wttr.in nemá timestamp
+                };
+
+                const formattedForecast = data.weather.slice(0, 6).map(day => {
+                    return {
+                        date: new Date(day.date),
+                        minTemp: parseFloat(day.mintempC),
+                        maxTemp: parseFloat(day.maxtempC),
+                        dayDescription: translateDescription(day.hourly[0].weatherDesc[0].value), // Překlad
+                        dayIcon: null, // wttr.in nemá ID
+                        nightDescription: translateDescription(day.hourly[day.hourly.length - 1].weatherDesc[0].value), // Překlad
+                        nightIcon: null,
+                        dayPrecipitationProbability: parseFloat(day.hourly[0].chanceofrain), // Zjednodušeno
+                        nightPrecipitationProbability: parseFloat(day.hourly[day.hourly.length - 1].chanceofrain) // Zjednodušeno
+                    };
+                });
+                
+                return {
+                    source: 'wttr.in',
+                    current: formattedCurrent,
+                    forecast: formattedForecast
+                };
+
+            } catch (error) {
+                console.error("Chyba při získávání počasí z wttr.in:", error);
+                return null;
+            }
+        }
+
+        // === ZOBRAZENÍ DAT POČASÍ NA STRÁNCE 1 ===
+        /**
+         * Zobrazí zformátovaná data počasí v HTML pro stránku 1.
+         * @param {object} data Objekt s daty počasí (current, forecast, source).
+         */
+        function displayWeatherDataPage1(data) {
+            const weatherInfoDiv = document.getElementById("weatherInfoPage1");
+            let htmlOutput = `<h2>Počasí pro ${data.current.cityName} <span style="font-size: 0.7em; opacity: 0.7;">(Zdroj: ${data.source})</span></h2>`;
+
+            // --- Aktuální podmínky v tabulce ---
+            htmlOutput += `<h3>Aktuální stav:</h3>`;
+            htmlOutput += `<table class="current-conditions-table">`;
+            htmlOutput += `<thead>
+                                <tr>
+                                    <th>Informace</th>
+                                    <th>Hodnota</th>
+                                </tr>
+                            </thead>`;
+            htmlOutput += `<tbody>`;
+
+            // Data z aktuálních podmínek
+            htmlOutput += `<tr><td>Teplota</td><td>${data.current.temperature.toFixed(1)}°C</td></tr>`;
+            htmlOutput += `<tr><td>Popis</td><td><span class="weather-icon">${getEmojiIcon(data.current.icon, data.current.description)}</span> ${data.current.description}</td></tr>`;
+            htmlOutput += `<tr><td>Pocitová teplota</td><td>${data.current.feelsLike.toFixed(1)}°C</td></tr>`;
+            htmlOutput += `<tr><td>Vlhkost</td><td>${data.current.humidity}%</td></tr>`;
+            htmlOutput += `<tr><td>Vítr</td><td>${data.current.windSpeed.toFixed(1)} km/h ${data.current.windDirection ? (data.source === 'OpenWeatherMap' ? `${data.current.windDirection}°` : data.current.windDirection) : ''}</td></tr>`;
+            
+            if (data.current.pressure) htmlOutput += `<tr><td>Tlak</td><td>${data.current.pressure} hPa</td></tr>`;
+            if (data.current.visibility) htmlOutput += `<tr><td>Viditelnost</td><td>${data.current.visibility.toFixed(1)} km</td></tr>`;
+            if (data.current.cloudCover) htmlOutput += `<tr><td>Oblačnost</td><td>${data.current.cloudCover}%</td></tr>`;
+            
+            if (data.source === 'OpenWeatherMap' && data.current.hasRain !== undefined) {
+                htmlOutput += `<tr><td>Srážky (den)</td><td>${data.current.hasRain ? 'Ano' : 'Ne'}</td></tr>`;
+            } else if (data.source === 'wttr.in' && data.current.chanceofrain !== undefined) {
+                htmlOutput += `<tr><td>Šance na déšť</td><td>${data.current.chanceofrain}%</td></tr>`;
+            }
+
+            if (data.current.sunrise && data.current.sunset) {
+                htmlOutput += `<tr><td>Východ slunce</td><td>${data.current.sunrise}</td></tr>`;
+                htmlOutput += `<tr><td>Západ slunce</td><td>${data.current.sunset}</td></tr>`;
+            }
+            
+            htmlOutput += `<tr><td>Čas aktualizace</td><td>${data.current.lastUpdate}</td></tr>`;
+            
+            htmlOutput += `</tbody></table>`;
+
+            // --- Předpověď na 6 dní v tabulce ---
+            htmlOutput += `<h3>Předpověď na 6 dní:</h3>`;
+            htmlOutput += `<table class="forecast-table">`;
+            htmlOutput += `<thead>
+                                <tr>
+                                    <th>Datum</th>
+                                    <th>Min. Teplota</th>
+                                    <th>Max. Teplota</th>
+                                    <th>Den</th>
+                                    <th>Noc</th>
+                                </tr>
+                            </thead>`;
+            htmlOutput += `<tbody>`;
+
+            data.forecast.forEach(day => {
+                const date = new Date(day.date).toLocaleDateString('cs-CZ', { weekday: 'short', day: 'numeric', month: 'numeric' });
+                
+                htmlOutput += `
+                    <tr>
+                        <td>${date}</td>
+                        <td>${day.minTemp.toFixed(1)}°C</td>
+                        <td>${day.maxTemp.toFixed(1)}°C</td>
+                        <td>
+                            <span class="weather-icon">${getEmojiIcon(day.dayIcon, day.dayDescription)}</span>
+                            ${day.dayDescription}<br>
+                            Srážky: ${data.source === 'OpenWeatherMap' ? (day.dayPrecipitationProbability === 'Ano' ? 'Ano' : 'Ne') : (day.dayPrecipitationProbability + '%')}
+                        </td>
+                        <td>
+                            <span class="weather-icon">${getEmojiIcon(day.nightIcon, day.nightDescription)}</span>
+                            ${day.nightDescription}<br>
+                            Srážky: ${data.source === 'OpenWeatherMap' ? (day.nightPrecipitationProbability === 'Ano' ? 'Ano' : 'Ne') : (day.nightPrecipitationProbability + '%')}
+                        </td>
+                    </tr>
+                `;
+            });
+
+            htmlOutput += `</tbody></table>`;
+
+            weatherInfoDiv.innerHTML = htmlOutput;
+            weatherInfoDiv.style.display = "block";
+        }
+
+        // === HLAVNÍ FUNKCE PRO POČASÍ STRÁNKY 1 ===
+        async function getWeatherPage1() {
+            const cityInput = document.getElementById("cityInputPage1").value.trim();
+            const weatherInfoDiv = document.getElementById("weatherInfoPage1");
+            const loadingMessageDiv = document.getElementById("loadingMessagePage1");
+
+            hideAllMessagesPage1();
             weatherInfoDiv.innerHTML = "";
             weatherInfoDiv.style.display = "none";
             loadingMessageDiv.style.display = "block";
             console.log(`Pokouším se získat počasí pro: ${cityInput}`);
-
+                
             if (!cityInput) {
-                showErrorMessage("Prosím, zadej název města, Jiříku! Tohle není futuristický kvíz, tady musíme mít vstup!");
+                showErrorMessagePage1("Prosím, zadej název města, Jiříku! Tohle není futuristický kvíz, tady musíme mít vstup!");
                 loadingMessageDiv.style.display = "none";
                 return;
             }
 
-            if (ACCUWEATHER_API_KEY === "TVUJ_API_KLIC_ZDE" || ACCUWEATHER_API_KEY === "") {
-                showErrorMessage("Ježíšku, Jiříku! Zapomněl jsi vložit svůj AccuWeather API klíč do kódu!");
-                loadingMessageDiv.style.display = "none";
-                return;
-            }
+            currentCityPage1 = cityInput;
+            let weatherData = null;
 
             try {
-                // Aktualizace globální proměnné
-                currentCity = cityInput;
-
-                // Krok 1: Získání Location Key pro zadané město
-                console.log(`Volám Location Search API: ${LOCATION_SEARCH_URL}?apikey=...&q=${cityInput}&language=cs-cz`);
-                const locationResponse = await fetch(`${LOCATION_SEARCH_URL}?apikey=${ACCUWEATHER_API_KEY}&q=${cityInput}&language=cs-cz`);
+                // Krok 1: Zkusíme OpenWeatherMap API
+                console.log("Pokouším se získat počasí z OpenWeatherMap pro stránku 1...");
+                weatherData = await getWeatherFromOpenWeather(cityInput, 'metric'); // Stránka 1 vždy metrické jednotky
                 
-                if (!locationResponse.ok) {
-                    const errorText = await locationResponse.text(); // Zkusíme získat text chyby
-                    console.error("Chyba při Location Search API:", locationResponse.status, errorText);
-                    throw new Error(`Location API vrátilo chybu ${locationResponse.status}: ${errorText || locationResponse.statusText}`);
+                if (weatherData) {
+                    console.log("Počasí úspěšně získáno z OpenWeatherMap pro stránku 1.");
+                    displayWeatherDataPage1(weatherData);
+                    showSuccessMessagePage1(`Počasí pro ${cityInput} úspěšně načteno (zdroj: OpenWeatherMap)! 🚀`);
+                } else {
+                    // Krok 2: Pokud OpenWeatherMap selže, zkusíme wttr.in API
+                    console.log("OpenWeatherMap selhalo nebo nevrátilo data, zkouším záložní wttr.in pro stránku 1...");
+                    weatherData = await getWeatherFromWttr(cityInput);
+
+                    if (weatherData) {
+                        console.log("Počasí úspěšně získáno ze záložního wttr.in pro stránku 1.");
+                        displayWeatherDataPage1(weatherData);
+                        showSuccessMessagePage1(`Počasí pro ${cityInput} úspěšně načteno (zdroj: wttr.in)! 🛰️`);
+                    } else {
+                        throw new Error('Nepodařilo se získat data z žádného API.');
+                    }
                 }
-                const locationData = await locationResponse.json();
-                console.log("Location Data:", locationData);
-
-                if (locationData.length === 0) {
-                    throw new Error(`Město "${cityInput}" nenalezeno nebo chyba API. Zkus to přesněji, kapitáne!`);
-                }
-
-                const locationKey = locationData[0].Key;
-                const cityName = locationData[0].LocalizedName;
-                console.log(`Nalezeno město: ${cityName}, Location Key: ${locationKey}`);
-
-                // Krok 2: Získání aktuálních podmínek
-                console.log(`Volám Current Conditions API: ${CURRENT_CONDITIONS_URL}${locationKey}?apikey=...&language=cs-cz&details=true`);
-                const currentConditionsResponse = await fetch(`${CURRENT_CONDITIONS_URL}${locationKey}?apikey=${ACCUWEATHER_API_KEY}&language=cs-cz&details=true`);
-                
-                if (!currentConditionsResponse.ok) {
-                    const errorText = await currentConditionsResponse.text();
-                    console.error("Chyba při Current Conditions API:", currentConditionsResponse.status, errorText);
-                    throw new Error(`Current Conditions API vrátilo chybu ${currentConditionsResponse.status}: ${errorText || currentConditionsResponse.statusText}`);
-                }
-                const currentConditionsData = await currentConditionsResponse.json();
-                console.log("Current Conditions Data:", currentConditionsData);
-
-                if (currentConditionsData.length === 0) {
-                    throw new Error("Nepodařilo se získat aktuální podmínky.");
-                }
-
-                const current = currentConditionsData[0];
-
-                // Krok 3: Získání 5denní předpovědi
-                console.log(`Volám 5-Day Forecast API: ${FORECAST_5_DAY_URL}${locationKey}?apikey=...&language=cs-cz&details=true&metric=true`);
-                const forecastResponse = await fetch(`${FORECAST_5_DAY_URL}${locationKey}?apikey=${ACCUWEATHER_API_KEY}&language=cs-cz&details=true&metric=true`);
-                
-                if (!forecastResponse.ok) {
-                    const errorText = await forecastResponse.text();
-                    console.error("Chyba při 5-Day Forecast API:", forecastResponse.status, errorText);
-                    throw new Error(`5-Day Forecast API vrátilo chybu ${forecastResponse.status}: ${errorText || forecastResponse.statusText}`);
-                }
-                const forecastData = await forecastResponse.json();
-                console.log("Forecast Data:", forecastData);
-
-                if (!forecastData.DailyForecasts || forecastData.DailyForecasts.length === 0) {
-                    throw new Error("Nepodařilo se získat předpověď na 5 dní.");
-                }
-
-                // Zobrazení dat na stránce
-                let htmlOutput = `<h2>Počasí pro ${cityName}</h2>`;
-
-                // --- Aktuální podmínky v tabulce ---
-                htmlOutput += `<h3>Aktuální stav:</h3>`;
-                htmlOutput += `<table class="current-conditions-table">`;
-                htmlOutput += `<thead>
-                                        <tr>
-                                            <th>Informace</th>
-                                            <th>Hodnota</th>
-                                        </tr>
-                                    </thead>`;
-                htmlOutput += `<tbody>`;
-
-                // Data z aktuálních podmínek
-                htmlOutput += `<tr><td>Teplota</td><td>${current.Temperature.Metric.Value}°C</td></tr>`;
-                htmlOutput += `<tr><td>Popis</td><td>${current.WeatherText}</td></tr>`;
-                htmlOutput += `<tr><td>Pocitová teplota</td><td>${current.RealFeelTemperature.Metric.Value}°C</td></tr>`;
-                htmlOutput += `<tr><td>Vlhkost</td><td>${current.RelativeHumidity}%</td></tr>`;
-                htmlOutput += `<tr><td>Vítr</td><td>${current.Wind.Speed.Metric.Value} km/h ${current.Wind.Direction.Localized}</td></tr>`;
-                htmlOutput += `<tr><td>UV Index</td><td>${current.UVIndex} (${current.UVIndexText})</td></tr>`;
-                htmlOutput += `<tr><td>Tlak</td><td>${current.Pressure.Metric.Value} hPa (${current.PressureTendency.LocalizedText})</td></tr>`;
-                htmlOutput += `<tr><td>Rosný bod</td><td>${current.DewPoint.Metric.Value}°C</td></tr>`;
-                htmlOutput += `<tr><td>Viditelnost</td><td>${current.Visibility.Metric.Value} km</td></tr>`;
-                htmlOutput += `<tr><td>Oblačnost</td><td>${current.CloudCover}%</td></tr>`;
-                htmlOutput += `<tr><td>Srážky (minulou hodinu)</td><td>${current.HasPrecipitation ? (current.PrecipitationType || 'Neznámé') + ' ' + current.PrecipitationSummary.PastHour.Metric.Value + ' mm' : 'Žádné'}</td></tr>`;
-                htmlOutput += `<tr><td>Slunce</td><td>${current.IsDayTime ? 'Den ☀️' : 'Noc 🌙'}</td></tr>`;
-                htmlOutput += `<tr><td>Čas aktualizace</td><td>${new Date(current.LocalObservationDateTime).toLocaleTimeString('cs-CZ')}</td></tr>`;
-                
-                htmlOutput += `</tbody></table>`;
-
-                // --- Předpověď na 5 dní v tabulce ---
-                htmlOutput += `<h3>Předpověď na 5 dní:</h3>`;
-                htmlOutput += `<table class="forecast-table">`;
-                htmlOutput += `<thead>
-                                        <tr>
-                                            <th>Datum</th>
-                                            <th>Min. Teplota</th>
-                                            <th>Max. Teplota</th>
-                                            <th>Den</th>
-                                            <th>Noc</th>
-                                        </tr>
-                                    </thead>`;
-                htmlOutput += `<tbody>`;
-
-                forecastData.DailyForecasts.forEach(day => {
-                    const date = new Date(day.Date).toLocaleDateString('cs-CZ', { weekday: 'short', day: 'numeric', month: 'numeric' });
-                    
-                    const minTemp = day.Temperature.Minimum.Value;
-                    const maxTemp = day.Temperature.Maximum.Value;
-                    const dayDescription = day.Day.IconPhrase;
-                    const dayPrecipitationProbability = day.Day.PrecipitationProbability;
-                    const nightDescription = day.Night.IconPhrase;
-                    const nightPrecipitationProbability = day.Night.PrecipitationProbability;
-
-                    htmlOutput += `
-                        <tr>
-                            <td>${date}</td>
-                            <td>${minTemp}°C</td>
-                            <td>${maxTemp}°C</td>
-                            <td>
-                                <span class="weather-icon">${getEmojiIcon(day.Day.Icon)}</span>
-                                ${dayDescription}<br>
-                                Srážky: ${dayPrecipitationProbability}%
-                            </td>
-                            <td>
-                                <span class="weather-icon">${getEmojiIcon(day.Night.Icon)}</span>
-                                ${nightDescription}<br>
-                                Srážky: ${nightPrecipitationProbability}%
-                            </td>
-                        </tr>
-                    `;
-                });
-
-                htmlOutput += `</tbody></table>`;
-
-                weatherInfoDiv.innerHTML = htmlOutput;
-                weatherInfoDiv.style.display = "block";
-                showSuccessMessage(`Počasí pro ${cityName} úspěšně načteno! 🚀`);
 
             } catch (error) {
-                console.error("Chyba při získávání počasí:", error);
-                showErrorMessage(`Chyba při komunikaci s API: ${error.message}. Zkus to znovu, nebo zkontroluj konzoli prohlížeče (F12 -> Console/Network) pro detailnější chyby, jako správný programátor! Možná je to CORS nebo síťový problém.`);
+                console.error("Konečná chyba při získávání počasí pro stránku 1:", error);
+                showErrorMessagePage1(`Chyba při komunikaci s API: ${error.message}. Zkus to znovu, nebo zkontroluj konzoli prohlížeče (F12 -> Console/Network) pro detailnější chyby, jako správný programátor!`);
             } finally {
                 loadingMessageDiv.style.display = "none";
             }
         }
 
+        // === FUNKCE SPECIFICKÉ PRO STRÁNKU 2 ===
+
+        // Funkce pro získání emoji podle ID počasí (pro stránku 2)
+        function getWeatherEmojiPage2(weatherId, isStarTrek = false) {
+            if (isStarTrek) {
+                if (weatherId >= 200 && weatherId < 300) return '🖖⚡'; // bouřky
+                if (weatherId >= 300 && weatherId < 400) return '🖖💧'; // mrholení
+                if (weatherId >= 500 && weatherId < 600) return '🖖🌧️'; // déšť
+                if (weatherId >= 600 && weatherId < 700) return '🖖❄️'; // sníh
+                if (weatherId >= 700 && weatherId < 800) return '🖖🌫️'; // mlha/opar
+                if (weatherId === 800) return '🖖☀️'; // jasno
+                if (weatherId > 800) return '🖖☁️'; // oblačno
+                return '🖖�';
+            } else {
+                return getEmojiIcon(weatherId); // Používáme sdílenou funkci
+            }
+        }
+
+        // Funkce pro získání názvu dne v týdnu (pro stránku 2)
+        function getDayNamePage2(date, isStarTrek = false) {
+            const days = ['Neděle', 'Pondělí', 'Úterý', 'Středa', 'Čtvrtek', 'Pátek', 'Sobota'];
+            const starTrekDays = ['Hvězdná neděle', 'Federační pondělí', 'Klingonské úterý', 'Vulkánská středa', 'Borgský čtvrtek', 'Bajorský pátek', 'Romulanská sobota'];
+
+            return isStarTrek ? starTrekDays[date.getDay()] : days[date.getDay()];
+        }
+
+        // Funkce pro získání doplňujících rad k počasí (pro stránku 2)
+        function getWeatherAdvicePage2(data, isStarTrek = false) {
+            const temp = data.main.temp;
+            const weatherId = data.weather[0].id;
+            const wind = data.wind.speed;
+
+            if (isStarTrek) {
+                if (temp < 0) return "Brrr, chladno jako na Andorii! Vezmi si teplé oblečení!";
+                if (temp > 30) return "Horko jako na Vulkánu! Hodně tekutin a pokrývku hlavy!";
+                if (weatherId >= 200 && weatherId < 300) return "Bouřka jako na Ferenginar! Raději zůstaň na palubě!";
+                if (weatherId >= 500 && weatherId < 600) return "Déšť jako na Bajoru, vezmi si štíty - tedy deštník!";
+                if (weatherId >= 600 && weatherId < 700) return "Sníh jako na Delta Vega, pozor na chodníky!";
+                if (wind > 10) return "Foukání jako na Risa během bouřkové sezóny!";
+                if (weatherId === 800 && temp > 20) return "Perfektní den jako na holopalubě! Ideální na průzkum!";
+                return "Žij dlouho a blaze!";
+            } else {
+                if (temp < 0) return "Vezmi si teplé oblečení a rukavice!";
+                if (temp > 30) return "Nezapomeň na pitný režim a pokrývku hlavy!";
+                if (weatherId >= 200 && weatherId < 300) return "Hrozí bouřky, raději zůstaň doma!";
+                if (weatherId >= 500 && weatherId < 600) return "Nezapomeň na deštník!";
+                if (weatherId >= 600 && weatherId < 700) return "Pozor na kluzké chodníky!";
+                if (wind > 10) return "Venku silně fouká, buď opatrný!";
+                if (weatherId === 800 && temp > 20) return "Ideální den na výlet!";
+                return "";
+            }
+        }
+
+        // Funkce pro konverzi jednotek teploty (pro stránku 2)
+        function convertTemperaturePage2(value, fromUnit, toUnit) {
+            if (fromUnit === toUnit) return value;
+            if (typeof value === 'string') value = parseFloat(value);
+            if (fromUnit === 'metric' && toUnit === 'imperial') {
+                return (value * 9/5 + 32).toFixed(1);
+            } else if (fromUnit === 'imperial' && toUnit === 'metric') {
+                return ((value - 32) * 5/9).toFixed(1);
+            }
+            return value;
+        }
+
+        // Funkce pro konverzi rychlosti větru (pro stránku 2)
+        function convertWindSpeedPage2(speed, fromUnit, toUnit) {
+            if (fromUnit === toUnit) return speed;
+            if (typeof speed === 'string') speed = parseFloat(speed);
+            if (fromUnit === 'metric' && toUnit === 'imperial') {
+                return (speed * 2.237).toFixed(1);
+            } else if (fromUnit === 'imperial' && toUnit === 'metric') {
+                return (speed / 2.237).toFixed(1);
+            }
+            return speed;
+        }
+
+        // Funkce pro získání symbolu jednotek (pro stránku 2)
+        function getUnitSymbolPage2(type) {
+            const units = document.getElementById('unitsSelect').value;
+            if (type === 'temp') {
+                return units === 'metric' ? '°C' : '°F';
+            } else if (type === 'speed') {
+                return units === 'metric' ? 'm/s' : 'mph';
+            }
+            return '';
+        }
+
+        // Asynchronní funkce pro získání a zobrazení předpovědi počasí (pro stránku 2)
+        async function getWeatherForecastPage2() {
+            const cityInput = document.getElementById('cityInputPage2');
+            const forecastDiv = document.getElementById('forecastDivPage2');
+            const getWeatherBtn = document.getElementById('getWeatherPage2Btn');
+            const lastUpdatedDiv = document.getElementById('lastUpdatedDivPage2');
+
+            const city = cityInput.value.trim();
+
+            if (!city) {
+                forecastDiv.innerHTML = '<p class="alert">Zadej prosím město!</p>';
+                return;
+            }
+
+            forecastDiv.innerHTML = '<p class="loading">Načítám data... 🖖</p>';
+            getWeatherBtn.disabled = true;
+
+            try {
+                const units = document.getElementById('unitsSelect').value;
+                const isStarTrek = document.getElementById('starTrekModeToggle').checked;
+
+                // Získání aktuálního počasí
+                const weatherResponse = await fetch(`${OPENWEATHER_BASE_URL}/weather?q=${encodeURIComponent(city)}&units=${units}&lang=cz&appid=${OPENWEATHER_API_KEY}`);
+                if (!weatherResponse.ok) {
+                    if (weatherResponse.status === 404) {
+                        throw new Error('Město nenalezeno. Zkontroluj název města.');
+                    } else {
+                        throw new Error(`Chyba při načítání počasí: ${weatherResponse.status}`);
+                    }
+                }
+                const weatherData = await weatherResponse.json();
+
+                // Získání předpovědi na 5 dní
+                const forecastResponse = await fetch(`${OPENWEATHER_BASE_URL}/forecast?q=${encodeURIComponent(city)}&units=${units}&lang=cz&appid=${OPENWEATHER_API_KEY}`);
+                if (!forecastResponse.ok) {
+                    throw new Error(`Chyba při načítání 5denní předpovědi: ${forecastResponse.status}`);
+                }
+                const forecastData = await forecastResponse.json();
+
+                // Extrakce dat z aktuálního počasí
+                const temp = weatherData.main.temp.toFixed(1);
+                const feelsLike = weatherData.main.feels_like.toFixed(1);
+                const humidity = weatherData.main.humidity;
+                const pressure = weatherData.main.pressure;
+                const weatherDescription = weatherData.weather[0].description;
+                const weatherId = weatherData.weather[0].id;
+                const windSpeed = weatherData.wind.speed;
+                const cityName = weatherData.name;
+                const country = weatherData.sys.country;
+                const weatherEmoji = getWeatherEmojiPage2(weatherId, isStarTrek);
+                const weatherAdvice = getWeatherAdvicePage2(weatherData, isStarTrek);
+                const tempUnit = getUnitSymbolPage2('temp');
+                const speedUnit = getUnitSymbolPage2('speed');
+
+                // Detekce extrémů počasí pro upozornění
+                let alertMessage = '';
+                if ((units === 'metric' && temp < -10) || (units === 'imperial' && temp < 14)) alertMessage += '❄️ Extrémní zima! ';
+                if ((units === 'metric' && temp > 35) || (units === 'imperial' && temp > 95)) alertMessage += '🔥 Extrémní horko! ';
+                if (humidity < 20) alertMessage += '💧 Nízká vlhkost vzduchu! ';
+                if (humidity > 90) alertMessage += '💦 Vysoká vlhkost vzduchu! ';
+                if ((units === 'metric' && windSpeed > 15) || (units === 'imperial' && windSpeed > 33)) alertMessage += '🌪️ Silný vítr! ';
+
+                // Zpracování 5denní předpovědi
+                const dailyForecasts = [];
+                const today = new Date().setHours(0, 0, 0, 0);
+
+                forecastData.list.forEach(item => {
+                    const date = new Date(item.dt * 1000);
+                    const dateDay = new Date(date).setHours(0, 0, 0, 0);
+                    const diffDays = Math.floor((dateDay - today) / (1000 * 60 * 60 * 24));
+
+                    if (diffDays >= -1 && diffDays < 7) {
+                        const existingDay = dailyForecasts.find(day => day.dayIndex === diffDays);
+                        if (!existingDay) {
+                            dailyForecasts.push({
+                                dayIndex: diffDays,
+                                date: date,
+                                temps: [item.main.temp],
+                                icons: [item.weather[0].id],
+                                descriptions: [item.weather[0].description]
+                            });
+                        } else {
+                            existingDay.temps.push(item.main.temp);
+                            existingDay.icons.push(item.weather[0].id);
+                            existingDay.descriptions.push(item.weather[0].description);
+                        }
+                    }
+                });
+
+                // Výpočet průměrné, minimální a maximální teploty a nejčastější ikony pro každý den
+                dailyForecasts.forEach(day => {
+                    day.avgTemp = (day.temps.reduce((a, b) => a + b, 0) / day.temps.length).toFixed(1);
+                    day.minTemp = Math.min(...day.temps).toFixed(1);
+                    day.maxTemp = Math.max(...day.temps).toFixed(1);
+
+                    const iconCounts = {};
+                    day.icons.forEach(icon => {
+                        iconCounts[icon] = (iconCounts[icon] || 0) + 1;
+                    });
+                    let maxCount = 0;
+                    let mostCommonIcon = day.icons[0];
+                    for (const icon in iconCounts) {
+                        if (iconCounts[icon] > maxCount) {
+                            maxCount = iconCounts[icon];
+                            mostCommonIcon = parseInt(icon);
+                        }
+                    }
+                    day.mainIcon = mostCommonIcon;
+                });
+
+                // Sestavení HTML pro zobrazení předpovědi
+                let forecastHTML = `
+                    <h2>${isStarTrek ? 'Počasí na planetě' : 'Počasí v'} ${cityName}, ${country}</h2>
+                    <div class="weather-icon">${weatherEmoji}</div>
+                    <div class="weather-row">
+                        <span class="weather-label">🌡️ Teplota:</span>
+                        <span>${temp} ${tempUnit} (pocitově: ${feelsLike} ${tempUnit})</span>
+                    </div>
+                    <div class="weather-row">
+                        <span class="weather-label">💨 Vítr:</span>
+                        <span>${windSpeed.toFixed(1)} ${speedUnit}</span>
+                    </div>
+                    <div class="weather-row">
+                        <span class="weather-label">💧 Vlhkost:</span>
+                        <span>${humidity} %</span>
+                    </div>
+                    <div class="weather-row">
+                        <span class="weather-label">🔍 Tlak:</span>
+                        <span>${pressure} hPa</span>
+                    </div>
+                    <div class="weather-row">
+                        <span class="weather-label">☁️ Počasí:</span>
+                        <span>${weatherDescription.charAt(0).toUpperCase() + weatherDescription.slice(1)}</span>
+                    </div>
+                    ${alertMessage ? `<div class="alert">${alertMessage}</div>` : ''}
+                    ${weatherAdvice ? `<div class="tips">${weatherAdvice}</div>` : ''}
+
+                    <div class="forecast-section">
+                        <div class="forecast-title">${isStarTrek ? 'Hvězdná předpověď na 5 dní' : 'Předpověď na 5 dní'}</div>
+                        <div class="daily-forecast">
+                            ${dailyForecasts.map(day => `
+                                <div class="forecast-day">
+                                    <div class="day-name">${getDayNamePage2(day.date, isStarTrek)}</div>
+                                    <div class="forecast-icon">${getWeatherEmojiPage2(day.mainIcon, isStarTrek)}</div>
+                                    <div class="temp-range">${day.minTemp}${tempUnit} - ${day.maxTemp}${tempUnit}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+
+                forecastDiv.innerHTML = forecastHTML;
+
+                // Aktualizace času poslední aktualizace
+                const now = new Date();
+                lastUpdatedDiv.textContent = `Poslední aktualizace: ${now.toLocaleString('cs-CZ')}`;
+
+                // Uložení posledního hledaného města
+                localStorage.setItem('weatherLastCity', city);
+
+            } catch (error) {
+                console.error("Chyba při získávání dat pro stránku 2:", error);
+                forecastDiv.innerHTML = `<p class="alert">Chyba: ${error.message}</p>`;
+            } finally {
+                getWeatherBtn.disabled = false;
+            }
+        }
+
+        // === SPRÁVA STRÁNEK ===
+        function showPage(pageId) {
+            // Získání všech "stránek"
+            const pages = document.querySelectorAll('.page');
+
+            // Skrytí všech stránek
+            pages.forEach(page => {
+                page.classList.remove('active');
+            });
+
+            // Zobrazení požadované stránky
+            document.getElementById(pageId).classList.add('active');
+
+            // Speciální inicializace pro stránky po přepnutí
+            if (pageId === 'page-home') {
+                displayFavoritesPage1(); // Zajistí, že oblíbené jsou vždy aktuální
+                // Pokud je potřeba, načíst počasí pro defaultní město na stránce 1
+                if (!document.getElementById("weatherInfoPage1").style.display || document.getElementById("weatherInfoPage1").style.display === "none") {
+                    getWeatherPage1();
+                }
+            } else if (pageId === 'page-about') {
+                updateFavoritesPage2(); // Zajistí, že oblíbené jsou vždy aktuální
+                // Načtení posledního města a zobrazení předpovědi pro stránku 2
+                const lastCity = localStorage.getItem('weatherLastCity');
+                if (lastCity) {
+                    document.getElementById('cityInputPage2').value = lastCity;
+                    getWeatherForecastPage2();
+                } else {
+                    // Pokud není žádné poslední město, zkusí Praha
+                    document.getElementById('cityInputPage2').value = 'Praha';
+                    getWeatherForecastPage2();
+                }
+            }
+        }
+
         // === INICIALIZACE PŘI NAČTENÍ STRÁNKY ===
-        
         document.addEventListener('DOMContentLoaded', function() {
-            // Zobrazení oblíbených míst při načtení stránky
-            displayFavorites();
-            
-            // Přidání Enter klávesy pro vyhledávání
-            document.getElementById('city-input').addEventListener('keypress', function(e) {
+            // Elementy pro stránku 2
+            const cityInputPage2 = document.getElementById('cityInputPage2');
+            const getWeatherPage2Btn = document.getElementById('getWeatherPage2Btn');
+            const addFavoritePage2Btn = document.getElementById('addFavoritePage2Btn');
+            const nightModeToggle = document.getElementById('nightModeToggle');
+            const starTrekModeToggle = document.getElementById('starTrekModeToggle');
+            const unitsSelect = document.getElementById('unitsSelect');
+            const suggestionsDatalist = document.getElementById('citySuggestions');
+
+            // Seznam velkých českých měst pro automatické doplňování (pro stránku 2)
+            const czechCities = [
+                'Praha', 'Brno', 'Ostrava', 'Plzeň', 'Liberec', 'Olomouc',
+                'České Budějovice', 'Hradec Králové', 'Ústí nad Labem', 'Pardubice',
+                'Zlín', 'Havířov', 'Kladno', 'Most', 'Opava', 'Frýdek-Místek',
+                'Jihlava', 'Karviná', 'Teplice', 'Děčín', 'Humpolec', 'Čejov',
+                'Černovice u Tábora', 'Tábor', 'Pelhřimov' // Přidáno z Jiříkových oblíbených
+            ];
+
+            // Naplnění datalistu návrhy měst (pro stránku 2)
+            czechCities.forEach(city => {
+                const option = document.createElement('option');
+                option.value = city;
+                suggestionsDatalist.appendChild(option);
+            });
+
+            // Načtení uživatelských nastavení z localStorage pro stránku 2
+            if (localStorage.getItem('weatherNightMode') === 'true') {
+                document.getElementById('page-about').classList.add('night-mode'); // Apply to page-about div
+                nightModeToggle.checked = true;
+            }
+
+            if (localStorage.getItem('weatherStarTrekMode') === 'true') {
+                document.getElementById('page-about').classList.add('star-trek-mode'); // Apply to page-about div
+                starTrekModeToggle.checked = true;
+            }
+
+            if (localStorage.getItem('weatherUnits')) {
+                unitsSelect.value = localStorage.getItem('weatherUnits');
+            }
+
+            // Event listenery pro stránku 1
+            document.getElementById('cityInputPage1').addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') {
-                    getWeather();
+                    getWeatherPage1();
                 }
             });
-            
+
+            // Event listenery pro stránku 2
+            getWeatherPage2Btn.addEventListener('click', getWeatherForecastPage2);
+
+            cityInputPage2.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    getWeatherForecastPage2();
+                }
+            });
+
+            addFavoritePage2Btn.addEventListener('click', addFavoritePage2);
+
+            nightModeToggle.addEventListener('change', () => {
+                document.getElementById('page-about').classList.toggle('night-mode');
+                localStorage.setItem('weatherNightMode', nightModeToggle.checked);
+            });
+
+            starTrekModeToggle.addEventListener('change', () => {
+                document.getElementById('page-about').classList.toggle('star-trek-mode');
+                localStorage.setItem('weatherStarTrekMode', starTrekModeToggle.checked);
+                getWeatherForecastPage2(); // Aktualizovat zobrazení s novým režimem
+            });
+
+            unitsSelect.addEventListener('change', () => {
+                localStorage.setItem('weatherUnits', unitsSelect.value);
+                getWeatherForecastPage2(); // Aktualizovat zobrazení s novými jednotkami
+            });
+
+            // Zobrazení domovské stránky při načtení
+            showPage('page-home');
             console.log('Počasí aplikace načtena! Oblíbená místa:', loadFavorites());
         });
+        // FULLSCREEN BTN
+const fullscreenBtn = document.getElementById('fullscreen-btn');
+
+fullscreenBtn.addEventListener('click', () => {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen().catch(err => {
+      alert(`Chyba při přechodu do režimu celé obrazovky: ${err.message}`);
+    });
+    fullscreenBtn.textContent = '❎ Ukončit režim celé obrazovky';
+  } else {
+    document.exitFullscreen();
+    fullscreenBtn.textContent = '🔲 Celá obrazovka';
+  }
+});
+
+document.addEventListener('fullscreenchange', () => {
+  if (!document.fullscreenElement) {
+    fullscreenBtn.textContent = '🔲 Celá obrazovka';
+  }
+});
+
+// TOGGLE LAYOUT BTN
+const toggleButton = document.getElementById('toggle-layout');
+const layoutStatus = document.getElementById('layout-status');
+const viewportMeta = document.getElementById('viewport-meta');
+
+let isDesktop = false;
+
+toggleButton.addEventListener('click', () => {
+  isDesktop = !isDesktop;
+
+  if (isDesktop) {
+    document.body.classList.add('desktop-mode');
+    viewportMeta.setAttribute('content', 'width=1024');
+    toggleButton.textContent = '📱 Přepnout na mobil';
+    layoutStatus.textContent = 'desktop';
+  } else {
+    document.body.classList.remove('desktop-mode');
+    viewportMeta.setAttribute('content', 'width=device-width, initial-scale=1.0');
+    toggleButton.textContent = '🖥️ Přepnout na desktop';
+    layoutStatus.textContent = 'mobilní';
+  }
+});
+
     </script>
 </body>
 </html>
+ 
